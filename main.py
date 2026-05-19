@@ -49,8 +49,6 @@ def start():
             if event.type == pygame.QUIT:
                 running = False
 
-        #move the hover to mouse pos
-        change_hover_color()
         #handle input based on state
         sm.handle_events(events)
         sm.handle_ui_events(events, sm)
@@ -162,12 +160,13 @@ def draw_vertical_edge_part(screen, color, x, y, line_amount, index, offset, hei
 
 def draw_circle(screen, color, x, y):
     """Draw two circles for a station object."""
-    pygame.draw.circle(screen, color, (x + TILE_SIZE / 2, y + TILE_SIZE / 2), math.ceil(TILE_SIZE * 0.33))
-    pygame.draw.circle(screen, pygame.Color(0, 0, 0), (x + TILE_SIZE / 2, y + TILE_SIZE / 2), math.ceil(TILE_SIZE * 0.33), 5)
+    size = 0.33
 
-def change_hover_color():
-    """Move the hover to mouse pos."""
+    if len(Line.line_map[y // TILE_SIZE - UI_HEIGHT // TILE_SIZE][x // TILE_SIZE]) >= 4:
+        size = 0.5
 
+    pygame.draw.circle(screen, color, (x + TILE_SIZE / 2, y + TILE_SIZE / 2), math.ceil(TILE_SIZE * size))
+    pygame.draw.circle(screen, pygame.Color(0, 0, 0), (x + TILE_SIZE / 2, y + TILE_SIZE / 2), math.ceil(TILE_SIZE * size), 5)
 
 
 def draw_ui(screen, font, game_state):
@@ -195,7 +194,7 @@ def draw_ui(screen, font, game_state):
 
     #draw the build mode toggle button
     rect = pygame.draw.rect(screen, pygame.Color(39, 171, 166), (SCREEN_X - mode_button_offset - mode_button_width, UI_HEIGHT // 2 - mode_button_height // 2, mode_button_width, mode_button_height))
-    text = font.render("Build Mode" if game_state == "BuildMode" else "Select Mode", True, (0, 0, 0))
+    text = font.render("Select Mode" if game_state == "SelectMode" else "Build Mode", True, (0, 0, 0))
     text_rect = text.get_rect(center=rect.center)
     screen.blit(text, text_rect)
 

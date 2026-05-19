@@ -231,7 +231,7 @@ class StationPopup(Popup):
 
             #check if name entered and name not yet used
             if len(name) > 0 and name not in [s.name for s in Station.stations]:
-                if not kwargs.get("station_x") and not kwargs.get("station_y"):
+                if kwargs.get("station_x") is None and kwargs.get("station_y") is None:
                     return
 
                 #get old amount of stations
@@ -324,6 +324,9 @@ class InputField:
 
         if event.key == pygame.K_BACKSPACE:
             self.text = self.text[:-1]
+            return
+
+        if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
             return
 
         if not event.unicode:
