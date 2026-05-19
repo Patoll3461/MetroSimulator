@@ -7,7 +7,7 @@ from input import handle_left_mouse_event, handle_right_mouse_event, handle_line
     handle_build_key_down, handle_ui_click
 from line import Line
 from popup import Popup
-from station import Station
+from map import metro_map
 
 class StateMachine:
     """Class fpr state machine."""
@@ -20,12 +20,12 @@ class StateMachine:
         """Add a new state."""
         self.states[name] = state
 
-    def change(self, name):
+    def change(self, name, **kwargs):
         """Change current state."""
         if self.current_state:
             self.states[self.current_state].exit()
         self.current_state = name
-        self.states[self.current_state].enter()
+        self.states[self.current_state].enter(**kwargs)
 
     def update(self):
         """Call the states update function."""
@@ -51,7 +51,7 @@ class BaseState:
         """Initialize state."""
         self.sm = sm
 
-    def enter(self): pass
+    def enter(self, **kwargs): pass
     def exit(self): pass
     def update(self): pass
     def draw(self, screen: pygame.Surface): pass
@@ -62,6 +62,18 @@ class NonPopupState(BaseState):
     def handle_ui_events(self, events, sm):
         for event in events:
             handle_ui_click(event, sm)
+
+    def draw(self, screen: pygame.Surface):
+        pos = pygame.mouse.get_pos()
+        x = math.floor(pos[0] / TILE_SIZE)
+        y = math.floor(pos[1] / TILE_SIZE)
+
+        for column, tile_row in enumerate(metro_map):
+            for row, tile in enumerate(tile_row):
+                if tile == 2:
+                    metro_map[column][row] = 0
+
+        metro_map[y][x] = 2
 
 class BuildMode(NonPopupState):
     """Class for the build mode state"""
@@ -96,7 +108,8 @@ class BuildMode(NonPopupState):
                 if y < 0:
                     return
                 y = int(y)
-                Station(x, y)
+
+                self.sm.change("StationPopupMode", x=x, y=y)
 
             #check if K pressed
             if handle_build_key_down(event):
@@ -115,10 +128,19 @@ class SelectMode(NonPopupState):
 
 class PopupMode(BaseState):
     """Class for popup state."""
-    def __init__(self, sm, popup: Popup = None):
+    def __init__(self, sm, popup: Popup):
         #get a popup object parsed in additionally
         super().__init__(sm)
-        self.popup = popup
+        self.popup: Popup = popup
+        self.x = 0
+        self.y = 0
+
+    def enter(self, **kwargs):
+        """Parse the x and y position in case of station placement."""
+        if kwargs.get("x"):
+            self.x = kwargs["x"]
+        if kwargs.get("y"):
+            self.y = kwargs["y"]
 
     def draw(self, screen: pygame.Surface):
         """Draw the popup."""
@@ -133,7 +155,11 @@ class PopupMode(BaseState):
                 if event.button == 1:
                     x,y = event.pos
                     if self.popup:
-                        self.popup.is_clicked(x, y, sm)
+                        self.popup.is_clicked(x, y, sm, station_x=self.x, station_y=self.y)
+
+    def handle_events(self, events):
+        """Handle input for the Text Input"""
+        self.popup.capture_input(events)
 
 class NewLineState(BaseState):
     """State when placing a new line."""
@@ -166,3 +192,16 @@ class NewLineState(BaseState):
                     #change back to build mode
                     Line.line_index = len(Line.lines) - 1
                     self.sm.change("BuildMode")
+
+    def draw(self, screen: pygame.Surface):
+        """Draw the hover object."""
+        pos = pygame.mouse.get_pos()
+        x = math.floor(pos[0] / TILE_SIZE)
+        y = math.floor(pos[1] / TILE_SIZE)
+
+        for column, tile_row in enumerate(metro_map):
+            for row, tile in enumerate(tile_row):
+                if tile == 2:
+                    metro_map[column][row] = 0
+
+        metro_map[y][x] = 2

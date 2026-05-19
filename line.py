@@ -1,5 +1,5 @@
 import pygame
-from constants import  V_H_INDEX_ORDER
+from constants import V_H_INDEX_ORDER, MAX_LINES
 
 
 class Line:
@@ -10,6 +10,10 @@ class Line:
 
     def __init__(self, start_x, start_y, color: pygame.Color):
         """Initialize line object."""
+        #check if limit reached
+        if len(Line.lines) >= MAX_LINES:
+            return
+
         self.color = color
         self.tiles = []
         self.add_tile(start_x, start_y, True, True)
@@ -32,8 +36,8 @@ class Line:
 
     def add_tile(self, x, y, is_first: bool = False, debug: bool = False):
         """Add the line to a new tile."""
-        v_index = 0
-        h_index = 0
+        v_index = 1
+        h_index = 1
         orientation = 0
 
         if self.check_if_tile_exists(x, y):

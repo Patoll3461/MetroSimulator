@@ -6,7 +6,7 @@ from constants import *
 import global_vars
 from line import Line, LineState
 from map import metro_map
-from popup import ColorPopup
+from popup import ColorPopup, StationPopup
 from state_machine import StateMachine, BuildMode, SelectMode, PopupMode, NewLineState
 from station import Station
 
@@ -29,12 +29,14 @@ def start():
 
     #define popups
     color_popup = ColorPopup(pygame.Color(184, 184, 184), font)
+    station_popup = StationPopup(pygame.Color(184, 184, 184), font)
 
     #initialize game state
     sm = StateMachine()
     sm.add("BuildMode", BuildMode(sm))
     sm.add("SelectMode", SelectMode(sm))
     sm.add("ColorPopupMode", PopupMode(sm, color_popup))
+    sm.add("StationPopupMode", PopupMode(sm, station_popup))
     sm.add("NewLineMode", NewLineState(sm))
     sm.change("SelectMode")
 
@@ -165,16 +167,7 @@ def draw_circle(screen, color, x, y):
 
 def change_hover_color():
     """Move the hover to mouse pos."""
-    pos = pygame.mouse.get_pos()
-    x = math.floor(pos[0] / TILE_SIZE)
-    y = math.floor(pos[1] / TILE_SIZE)
 
-    for column, tile_row in enumerate(metro_map):
-        for row, tile in enumerate(tile_row):
-            if tile == 2:
-                metro_map[column][row] = 0
-
-    metro_map[y][x] = 2
 
 
 def draw_ui(screen, font, game_state):

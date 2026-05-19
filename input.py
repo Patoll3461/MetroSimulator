@@ -80,4 +80,3 @@ def handle_ui_click(event, sm):
                     else:
                         #if the plus button was clicked show the select color popup
                         sm.change("ColorPopupMode")
-                        print("Clicked + button")
