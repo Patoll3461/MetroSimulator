@@ -8,7 +8,7 @@ class Line:
     """This class defines individual lines"""
     line_index = 0
     lines = []
-    line_map = [[[] for _ in range(16)] for _ in range(11)]
+    line_map = [[[] for _ in range(31)] for _ in range(21)]
 
     def __init__(self, start_x, start_y, color: pygame.Color):
         """Initialize line object."""

@@ -8,6 +8,7 @@ from input import handle_left_mouse_event, handle_right_mouse_event, handle_line
 from line import Line
 from popup import Popup
 from map import metro_map
+import global_vars
 
 class StateMachine:
     """Class fpr state machine."""
@@ -65,13 +66,16 @@ class NonPopupState(BaseState):
 
     def draw(self, screen: pygame.Surface):
         pos = pygame.mouse.get_pos()
-        x = math.floor(pos[0] / TILE_SIZE)
-        y = math.floor(pos[1] / TILE_SIZE)
+        x = math.floor((pos[0] + global_vars.camera.x) / TILE_SIZE)
+        y = math.floor((pos[1] + global_vars.camera.y) / TILE_SIZE)
 
         for column, tile_row in enumerate(metro_map):
             for row, tile in enumerate(tile_row):
                 if tile == 2:
                     metro_map[column][row] = 0
+
+        if pos[1] < UI_HEIGHT:
+            return
 
         metro_map[y][x] = 2
 
@@ -84,8 +88,8 @@ class BuildMode(NonPopupState):
             pos = handle_left_mouse_event(event)
             if pos:
                 #build new line at pos
-                x = math.floor(pos[0] / TILE_SIZE)
-                y = math.floor(pos[1] / TILE_SIZE) - UI_HEIGHT / TILE_SIZE
+                x = math.floor((pos[0] + global_vars.camera.x) / TILE_SIZE)
+                y = math.floor((pos[1] + global_vars.camera.y) / TILE_SIZE) - UI_HEIGHT / TILE_SIZE
                 if y < 0:
                     return
                 y = int(y)
@@ -103,8 +107,8 @@ class BuildMode(NonPopupState):
             pos = handle_right_mouse_event(event)
             if pos:
                 #build station at pos
-                x = math.floor(pos[0] / TILE_SIZE)
-                y = math.floor(pos[1] / TILE_SIZE) - UI_HEIGHT / TILE_SIZE
+                x = math.floor((pos[0] + global_vars.camera.x) / TILE_SIZE)
+                y = math.floor((pos[1] + global_vars.camera.y) / TILE_SIZE) - UI_HEIGHT / TILE_SIZE
                 if y < 0:
                     return
                 y = int(y)
@@ -178,15 +182,18 @@ class NewLineState(BaseState):
             #get mouse pos
             pos = handle_left_mouse_event(event)
             if pos:
-                x,y = pos
+                mx, my = pos
+
+                x = (mx + global_vars.camera.x) // TILE_SIZE
+                y = (my + global_vars.camera.y - UI_HEIGHT) // TILE_SIZE
                 #get the old length of lines
                 old_len = len(Line.lines)
                 #check if ui area was clicked
-                if x // TILE_SIZE < 0 or y // TILE_SIZE - UI_HEIGHT // TILE_SIZE < 0:
+                if mx // TILE_SIZE < 0 or my // TILE_SIZE - UI_HEIGHT // TILE_SIZE < 0:
                     return
 
                 #try to add a line
-                Line(x // TILE_SIZE, y // TILE_SIZE - UI_HEIGHT // TILE_SIZE, self.color)
+                Line(x, y, self.color)
                 #if line adding was successfully
                 if len(Line.lines) > old_len:
                     #change back to build mode
@@ -194,14 +201,16 @@ class NewLineState(BaseState):
                     self.sm.change("BuildMode")
 
     def draw(self, screen: pygame.Surface):
-        """Draw the hover object."""
         pos = pygame.mouse.get_pos()
-        x = math.floor(pos[0] / TILE_SIZE)
-        y = math.floor(pos[1] / TILE_SIZE)
+        x = math.floor((pos[0] + global_vars.camera.x) / TILE_SIZE)
+        y = math.floor((pos[1] + global_vars.camera.y) / TILE_SIZE)
 
         for column, tile_row in enumerate(metro_map):
             for row, tile in enumerate(tile_row):
                 if tile == 2:
                     metro_map[column][row] = 0
+
+        if pos[1] < UI_HEIGHT:
+            return
 
         metro_map[y][x] = 2

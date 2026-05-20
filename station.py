@@ -5,7 +5,7 @@ import global_vars
 class Station:
     """Class for station objects."""
     stations = []
-    station_map: list[list["Station | None"]] = [[None for _ in range(16)] for _ in range(11)]
+    station_map: list[list["Station | None"]] = [[None for _ in range(31)] for _ in range(21)]
 
     def __init__(self, x, y, name):
         """Initialize station."""

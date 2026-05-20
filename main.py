@@ -2,8 +2,10 @@ import pygame
 import sys
 import math
 
+from camera import Camera
 from constants import *
 import global_vars
+from input import handle_mouse_move
 from line import Line, LineState
 from map import metro_map
 from popup import ColorPopup, StationPopup
@@ -55,40 +57,43 @@ def start():
         sm.handle_events(events)
         sm.handle_ui_events(events, sm)
         sm.update()
+
+        handle_mouse_move(events)
         #fill screen white
         screen.fill((255, 255, 255))
         #draw lines, stations and UI
-        draw_screen(screen)
+        draw_screen(screen, global_vars.camera)
         draw_ui(screen, font, sm.current_state)
         sm.draw(screen)
         global_vars.warn_popup.draw(screen)
         pygame.display.flip()
 
         clock.tick(60)
-        #print(clock.get_fps())
 
     #quit game
     pygame.quit()
     sys.exit()
 
 
-def draw_screen(screen: pygame.Surface):
+def draw_screen(screen: pygame.Surface, camera: Camera):
     """Render the screen elements."""
     global hover
 
     x_bounds = len(metro_map[0])
     y_bounds = len(metro_map)
 
+    viewport = (camera.x, camera.y)
+
     pygame.draw.rect(screen, pygame.Color(0, 0, 0), (0, UI_HEIGHT - 5, x_bounds * TILE_SIZE, 5))
 
-    for row_index in range(0, y_bounds):
+    for row_index in range(viewport[1] // TILE_SIZE, y_bounds):
         row = metro_map[row_index]
 
-        for col_index in range(0, x_bounds):
+        for col_index in range(viewport[0] // TILE_SIZE, x_bounds):
             tile = metro_map[row_index][col_index]
 
-            x = col_index * TILE_SIZE
-            y = row_index * TILE_SIZE
+            x = col_index * TILE_SIZE - camera.x
+            y = row_index * TILE_SIZE - camera.y
 
             #draw hover if map value is two
             if tile == 2 and y > UI_HEIGHT - TILE_SIZE:
@@ -174,6 +179,8 @@ def draw_circle(screen, color, x, y):
 
 def draw_ui(screen, font, game_state):
     """Draw the top bar UI"""
+    #draw over lines and hovers falsely renders in ui space
+    pygame.draw.rect(screen, pygame.Color(255, 255, 255), (0, 0, SCREEN_X, UI_HEIGHT - 3))
     #draw the line ui
     for i in range(0, len(Line.lines) + 1):
         if i < len(Line.lines):

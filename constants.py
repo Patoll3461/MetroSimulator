@@ -13,6 +13,9 @@ V_H_INDEX_ORDER = [1, 2, 0, 3, -1]
 #screen size
 SCREEN_X = 960
 SCREEN_Y = 640
+#world size
+WORLD_X = 1920
+WORLD_Y = 1280
 #height of ui bar
 UI_HEIGHT = 64
 #maximum number of lines
