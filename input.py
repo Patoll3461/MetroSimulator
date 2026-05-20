@@ -112,3 +112,7 @@ def handle_scroll_wheel(events):
                 global_vars.camera.change_zoom(0.1)
             if event.button == 133:
                 global_vars.camera.change_zoom(-0.1)
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_z:
+                global_vars.camera.zoom = 1

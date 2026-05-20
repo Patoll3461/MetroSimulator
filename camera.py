@@ -1,5 +1,6 @@
 from constants import SCREEN_X, WORLD_X, SCREEN_Y, WORLD_Y
 
+import pygame
 
 class Camera:
     def __init__(self, viewport: tuple[int, int], min_zoom: float, max_zoom):
@@ -9,11 +10,19 @@ class Camera:
         self.max_zoom = max_zoom
 
     def change_zoom(self, zoom_factor):
+        mx, my = pygame.mouse.get_pos()
+
+        world_x = self.x + mx / self.zoom
+        world_y = self.y + my / self.zoom
+
         self.zoom += zoom_factor
         if self.zoom >= self.max_zoom:
             self.zoom = self.max_zoom
         if self.zoom <= self.min_zoom:
             self.zoom = self.min_zoom
+
+        self.x = world_x - mx / self.zoom
+        self.y = world_y - my / self.zoom
 
     def move(self, vector: tuple[int, int]):
         self.x += vector[0]

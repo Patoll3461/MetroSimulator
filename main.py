@@ -84,10 +84,10 @@ def draw_screen(screen: pygame.Surface, camera: Camera):
 
     pygame.draw.rect(screen, pygame.Color(0, 0, 0), (0, UI_HEIGHT - 5, x_bounds * TILE_SIZE, 5))
 
-    for row_index in range(viewport[1] // TILE_SIZE, y_bounds):
+    for row_index in range(int(viewport[1] // TILE_SIZE), y_bounds):
         row = metro_map[row_index]
 
-        for col_index in range(viewport[0] // TILE_SIZE, x_bounds):
+        for col_index in range(int(viewport[0] // TILE_SIZE), x_bounds):
             tile = metro_map[row_index][col_index]
 
             x = (col_index * TILE_SIZE - camera.x) * camera.zoom
