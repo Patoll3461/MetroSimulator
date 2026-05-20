@@ -19,6 +19,7 @@ class WarnPopup:
         """Open the popup."""
         self.is_active = True
         self.text = text
+        self.timer = 0
 
     def close(self):
         """Close the popup."""

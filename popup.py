@@ -243,8 +243,10 @@ class StationPopup(Popup):
 
             if name in [s.name for s in Station.stations]:
                 global_vars.warn_popup.open("Station name already in use!")
+                return
 
             if kwargs.get("station_x") is None and kwargs.get("station_y") is None:
+                global_vars.warn_popup.open("Error! Please try again!")
                 return
 
             #get old amount of stations
@@ -279,6 +281,8 @@ class StationPopup(Popup):
 
     def close(self, sm):
         """Close the Popup."""
+        self.name_input.text = ""
+        self.name_input.focused = False
         sm.change("BuildMode")
 
 
