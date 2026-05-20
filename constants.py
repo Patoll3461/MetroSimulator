@@ -8,6 +8,7 @@ import pygame
 TILE_SIZE = 64
 #width of lines
 LINE_WIDTH = math.ceil(TILE_SIZE / 2 * (1 / 3))
+
 #order for line on tile
 V_H_INDEX_ORDER = [1, 2, 0, 3, -1]
 #screen size

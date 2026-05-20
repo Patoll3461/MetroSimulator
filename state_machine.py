@@ -66,8 +66,8 @@ class NonPopupState(BaseState):
 
     def draw(self, screen: pygame.Surface):
         pos = pygame.mouse.get_pos()
-        x = math.floor((pos[0] + global_vars.camera.x) / TILE_SIZE)
-        y = math.floor((pos[1] + global_vars.camera.y) / TILE_SIZE)
+        x = math.floor((pos[0] // global_vars.camera.zoom + global_vars.camera.x) / TILE_SIZE)
+        y = math.floor(((pos[1] - UI_HEIGHT) // global_vars.camera.zoom + global_vars.camera.y) / TILE_SIZE)
 
         for column, tile_row in enumerate(metro_map):
             for row, tile in enumerate(tile_row):
@@ -88,8 +88,8 @@ class BuildMode(NonPopupState):
             pos = handle_left_mouse_event(event)
             if pos:
                 #build new line at pos
-                x = math.floor((pos[0] + global_vars.camera.x) / TILE_SIZE)
-                y = math.floor((pos[1] + global_vars.camera.y) / TILE_SIZE) - UI_HEIGHT / TILE_SIZE
+                x = math.floor((pos[0] // global_vars.camera.zoom + global_vars.camera.x) / TILE_SIZE)
+                y = math.floor(((pos[1] - UI_HEIGHT) // global_vars.camera.zoom + global_vars.camera.y) / TILE_SIZE)
                 if y < 0:
                     return
                 y = int(y)
@@ -107,8 +107,8 @@ class BuildMode(NonPopupState):
             pos = handle_right_mouse_event(event)
             if pos:
                 #build station at pos
-                x = math.floor((pos[0] + global_vars.camera.x) / TILE_SIZE)
-                y = math.floor((pos[1] + global_vars.camera.y) / TILE_SIZE) - UI_HEIGHT / TILE_SIZE
+                x = math.floor((pos[0] // global_vars.camera.zoom + global_vars.camera.x) / TILE_SIZE)
+                y = math.floor(((pos[1] - UI_HEIGHT) // global_vars.camera.zoom + global_vars.camera.y) / TILE_SIZE)
                 if y < 0:
                     return
                 y = int(y)
@@ -184,8 +184,8 @@ class NewLineState(BaseState):
             if pos:
                 mx, my = pos
 
-                x = (mx + global_vars.camera.x) // TILE_SIZE
-                y = (my + global_vars.camera.y - UI_HEIGHT) // TILE_SIZE
+                x = math.floor((mx // global_vars.camera.zoom + global_vars.camera.x) / TILE_SIZE)
+                y = math.floor(((my - UI_HEIGHT) // global_vars.camera.zoom + global_vars.camera.y) / TILE_SIZE)
                 #get the old length of lines
                 old_len = len(Line.lines)
                 #check if ui area was clicked
@@ -202,8 +202,8 @@ class NewLineState(BaseState):
 
     def draw(self, screen: pygame.Surface):
         pos = pygame.mouse.get_pos()
-        x = math.floor((pos[0] + global_vars.camera.x) / TILE_SIZE)
-        y = math.floor((pos[1] + global_vars.camera.y) / TILE_SIZE)
+        x = math.floor((pos[0] // global_vars.camera.zoom + global_vars.camera.x) / TILE_SIZE)
+        y = math.floor(((pos[1] - UI_HEIGHT) // global_vars.camera.zoom + global_vars.camera.y) / TILE_SIZE)
 
         for column, tile_row in enumerate(metro_map):
             for row, tile in enumerate(tile_row):

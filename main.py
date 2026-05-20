@@ -5,7 +5,7 @@ import math
 from camera import Camera
 from constants import *
 import global_vars
-from input import handle_mouse_move
+from input import handle_mouse_move, handle_scroll_wheel
 from line import Line, LineState
 from map import metro_map
 from popup import ColorPopup, StationPopup
@@ -13,7 +13,6 @@ from state_machine import StateMachine, BuildMode, SelectMode, PopupMode, NewLin
 from station import Station
 
 build_mode = False
-hover = pygame.Surface((TILE_SIZE, TILE_SIZE), pygame.SRCALPHA)
 
 def start():
     """Start the game and run the game loop."""
@@ -58,6 +57,7 @@ def start():
         sm.handle_ui_events(events, sm)
         sm.update()
 
+        handle_scroll_wheel(events)
         handle_mouse_move(events)
         #fill screen white
         screen.fill((255, 255, 255))
@@ -77,8 +77,6 @@ def start():
 
 def draw_screen(screen: pygame.Surface, camera: Camera):
     """Render the screen elements."""
-    global hover
-
     x_bounds = len(metro_map[0])
     y_bounds = len(metro_map)
 
@@ -92,13 +90,14 @@ def draw_screen(screen: pygame.Surface, camera: Camera):
         for col_index in range(viewport[0] // TILE_SIZE, x_bounds):
             tile = metro_map[row_index][col_index]
 
-            x = col_index * TILE_SIZE - camera.x
-            y = row_index * TILE_SIZE - camera.y
+            x = (col_index * TILE_SIZE - camera.x) * camera.zoom
+            y = (row_index * TILE_SIZE - camera.y) * camera.zoom
 
             #draw hover if map value is two
-            if tile == 2 and y > UI_HEIGHT - TILE_SIZE:
+            if tile == 2:
+                hover = pygame.Surface((TILE_SIZE * camera.zoom, TILE_SIZE * camera.zoom), pygame.SRCALPHA)
                 hover.fill((0, 0, 0, 128))
-                screen.blit(hover, (x, y))
+                screen.blit(hover, (x, y + UI_HEIGHT))
 
             #render lines in case of line
             if len(Line.line_map[row_index][col_index]) > 0:
@@ -136,35 +135,35 @@ def count_lines(lines: list[LineState]) -> tuple[int, int]:
 
 def draw_lines_horizontal(screen: pygame.Surface, color: pygame.Color, x: int, y: int, line_amount: tuple[int, int], index: int):
     """Draw a horizontal line all the way through."""
-    pygame.draw.rect(screen, color,(x, y + 0.25 * TILE_SIZE + index * (TILE_SIZE / 2 * (1 / 3)), TILE_SIZE, LINE_WIDTH))
+    pygame.draw.rect(screen, color,(x, y + 0.25 * TILE_SIZE + index * LINE_WIDTH * global_vars.camera.zoom, TILE_SIZE * global_vars.camera.zoom, LINE_WIDTH * global_vars.camera.zoom))
 
 def draw_line_vertical(screen: pygame.Surface, color: pygame.Color, x: int, y: int, line_amount: tuple[int, int], index: int):
     """Draw a vertical line all the way through."""
-    pygame.draw.rect(screen, color, (x + 0.25 * TILE_SIZE + index * (TILE_SIZE / 2 * (1 / 3)), y, LINE_WIDTH, TILE_SIZE))
+    pygame.draw.rect(screen, color, (x + 0.25 * TILE_SIZE + index * LINE_WIDTH * global_vars.camera.zoom, y, LINE_WIDTH * global_vars.camera.zoom, TILE_SIZE * global_vars.camera.zoom))
 
 def draw_edge(screen, color, x, y, line_amount, h_index, v_index, orientation):
     """Draw an edge consisting of two different parts, horizontal and vertical."""
     #Good luck debugging this only god knows how it works
     if orientation == 0:
-        draw_vertical_edge_part(screen, color, x, y, line_amount, v_index, 0, (0.25 * TILE_SIZE + h_index * (TILE_SIZE / 2 * (1 / 3))) + LINE_WIDTH)
-        draw_horizontal_edge_part(screen, color, x, y, line_amount, h_index, 0, (0.25 * TILE_SIZE + v_index * (TILE_SIZE / 2 * (1 / 3))) + LINE_WIDTH)
+        draw_vertical_edge_part(screen, color, x, y, line_amount, v_index, 0, (0.25 * TILE_SIZE+ h_index * LINE_WIDTH * global_vars.camera.zoom) + math.floor(LINE_WIDTH * global_vars.camera.zoom))
+        draw_horizontal_edge_part(screen, color, x, y, line_amount, h_index, 0, (0.25 * TILE_SIZE + v_index * LINE_WIDTH * global_vars.camera.zoom) + math.floor(LINE_WIDTH * global_vars.camera.zoom))
     elif orientation == 1:
-        draw_vertical_edge_part(screen, color, x, y, line_amount, v_index, 0, (0.25 * TILE_SIZE + h_index * (TILE_SIZE / 2 * (1 / 3))) + LINE_WIDTH)
-        draw_horizontal_edge_part(screen, color, x, y, line_amount, h_index, 0.25 * TILE_SIZE + v_index * (TILE_SIZE / 2 * (1 / 3)), math.ceil(TILE_SIZE - (0.25 * TILE_SIZE + v_index * (TILE_SIZE / 2 * (1 / 3)))))
+        draw_vertical_edge_part(screen, color, x, y, line_amount, v_index, 0, (0.25 * TILE_SIZE + h_index * LINE_WIDTH * global_vars.camera.zoom) + math.floor(LINE_WIDTH * global_vars.camera.zoom))
+        draw_horizontal_edge_part(screen, color, x, y, line_amount, h_index, 0.25 * TILE_SIZE + v_index * LINE_WIDTH * global_vars.camera.zoom, math.ceil(TILE_SIZE * global_vars.camera.zoom - (0.25 * TILE_SIZE + v_index * LINE_WIDTH * global_vars.camera.zoom)))
     elif orientation == 2:
-        draw_vertical_edge_part(screen, color, x, y, line_amount, v_index, 0.25 * TILE_SIZE + h_index * (TILE_SIZE / 2 * (1 / 3)), math.ceil(TILE_SIZE - (0.25 * TILE_SIZE + h_index * (TILE_SIZE / 2 * (1 / 3)))))
-        draw_horizontal_edge_part(screen, color, x, y, line_amount, h_index,  0.25 * TILE_SIZE + v_index * (TILE_SIZE / 2 * (1 / 3)), math.ceil(TILE_SIZE - (0.25 * TILE_SIZE + v_index * (TILE_SIZE / 2 * (1 / 3)))))
+        draw_vertical_edge_part(screen, color, x, y, line_amount, v_index, 0.25 * TILE_SIZE + h_index * LINE_WIDTH * global_vars.camera.zoom, math.ceil(TILE_SIZE * global_vars.camera.zoom - (0.25 * TILE_SIZE + h_index * LINE_WIDTH * global_vars.camera.zoom)))
+        draw_horizontal_edge_part(screen, color, x, y, line_amount, h_index,  0.25 * TILE_SIZE + v_index * LINE_WIDTH * global_vars.camera.zoom, math.ceil(TILE_SIZE * global_vars.camera.zoom - (0.25 * TILE_SIZE + v_index * LINE_WIDTH * global_vars.camera.zoom)))
     elif orientation == 3:
-        draw_vertical_edge_part(screen, color, x, y, line_amount, v_index, 0.25 * TILE_SIZE + h_index * (TILE_SIZE / 2 * (1 / 3)), math.ceil(TILE_SIZE - (0.25 * TILE_SIZE + h_index * (TILE_SIZE / 2 * (1 / 3)))))
-        draw_horizontal_edge_part(screen, color, x, y, line_amount, h_index, 0, (0.25 * TILE_SIZE + v_index * (TILE_SIZE / 2 * (1 / 3))) + LINE_WIDTH)
+        draw_vertical_edge_part(screen, color, x, y, line_amount, v_index, 0.25 * TILE_SIZE + h_index * LINE_WIDTH * global_vars.camera.zoom, math.ceil(TILE_SIZE * global_vars.camera.zoom - (0.25 * TILE_SIZE + h_index * LINE_WIDTH * global_vars.camera.zoom)))
+        draw_horizontal_edge_part(screen, color, x, y, line_amount, h_index, 0, (0.25 * TILE_SIZE + v_index * LINE_WIDTH * global_vars.camera.zoom) + math.floor(LINE_WIDTH * global_vars.camera.zoom))
 
 def draw_horizontal_edge_part(screen, color, x, y, line_amount, index, offset, width):
     """Draw the horizontal part of the edge."""
-    pygame.draw.rect(screen, color,(x + offset, y + 0.25 * TILE_SIZE + index * (TILE_SIZE / 2 * (1 / 3)), width, LINE_WIDTH))
+    pygame.draw.rect(screen, color,(x + offset, y + 0.25 * TILE_SIZE + index * LINE_WIDTH * global_vars.camera.zoom, width, LINE_WIDTH * global_vars.camera.zoom))
 
 def draw_vertical_edge_part(screen, color, x, y, line_amount, index, offset, height):
     """Draw the vertical part of the edge."""
-    pygame.draw.rect(screen, color, (x + 0.25 * TILE_SIZE + index * (TILE_SIZE / 2 * (1 / 3)), y + offset, LINE_WIDTH, height))
+    pygame.draw.rect(screen, color, (x + 0.25 * TILE_SIZE + index * LINE_WIDTH * global_vars.camera.zoom, y + offset, LINE_WIDTH * global_vars.camera.zoom, height))
 
 def draw_circle(screen, color, x, y):
     """Draw two circles for a station object."""
@@ -173,8 +172,8 @@ def draw_circle(screen, color, x, y):
     if len(Line.line_map[y // TILE_SIZE - UI_HEIGHT // TILE_SIZE][x // TILE_SIZE]) >= 4:
         size = 0.5
 
-    pygame.draw.circle(screen, color, (x + TILE_SIZE / 2, y + TILE_SIZE / 2), math.ceil(TILE_SIZE * size))
-    pygame.draw.circle(screen, pygame.Color(0, 0, 0), (x + TILE_SIZE / 2, y + TILE_SIZE / 2), math.ceil(TILE_SIZE * size), 5)
+    pygame.draw.circle(screen, color, (x + TILE_SIZE / 2, y + TILE_SIZE / 2), math.ceil(TILE_SIZE * size) * global_vars.camera.zoom)
+    pygame.draw.circle(screen, pygame.Color(0, 0, 0), (x + TILE_SIZE / 2, y + TILE_SIZE / 2), math.ceil(TILE_SIZE * size), 5 * global_vars.camera.zoom)
 
 
 def draw_ui(screen, font, game_state):

@@ -13,7 +13,7 @@ camera = None
 def init():
     global font, selected_station, warn_popup, camera
 
-    camera = Camera((0, 0), 2, 3)
+    camera = Camera((0, 0), 0.5, 3)
     font = pygame.font.SysFont(None, 36)
     selected_station = ""
     warn_popup = WarnPopup(pygame.Color(255, 205, 69), font, SCREEN_X - 200, 50)

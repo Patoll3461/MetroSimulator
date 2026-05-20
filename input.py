@@ -101,3 +101,14 @@ def handle_mouse_move(events):
         if event.type == pygame.MOUSEMOTION and middle_held:
             dx, dy = event.rel
             global_vars.camera.move((-dx, -dy))
+
+
+def handle_scroll_wheel(events):
+    for event in events:
+        #print(event.type, "type")
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            #print(event.button, "button")
+            if event.button == 132:
+                global_vars.camera.change_zoom(0.1)
+            if event.button == 133:
+                global_vars.camera.change_zoom(-0.1)
