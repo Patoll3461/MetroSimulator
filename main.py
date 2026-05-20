@@ -18,6 +18,8 @@ def start():
     global build_mode
     pygame.init()
 
+    global_vars.init()
+
     screen = pygame.display.set_mode((SCREEN_X, SCREEN_Y))
     pygame.display.set_caption("Metro Simulator")
 
@@ -59,6 +61,7 @@ def start():
         draw_screen(screen)
         draw_ui(screen, font, sm.current_state)
         sm.draw(screen)
+        global_vars.warn_popup.draw(screen)
         pygame.display.flip()
 
         clock.tick(60)
@@ -200,7 +203,7 @@ def draw_ui(screen, font, game_state):
 
     #draw the current station text
     station_text = font.render(global_vars.selected_station, True, (0, 0, 0))
-    station_text_rect = station_text.get_rect(midleft=(len(Line.lines) * line_width + line_offset + len(Line.lines) * line_distance + 100, UI_HEIGHT // 2))
+    station_text_rect = station_text.get_rect(midleft=(len(Line.lines) * line_width + line_offset + len(Line.lines) * line_distance + 50, UI_HEIGHT // 2))
     screen.blit(station_text, station_text_rect)
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 from line import Line
+import global_vars
 
 
 class Station:
@@ -9,11 +10,15 @@ class Station:
     def __init__(self, x, y, name):
         """Initialize station."""
         #check if station or line present
-        if Station.station_map[y][x] or len(Line.line_map[y][x]) <= 0:
-            print("Station already here or no line present")
+        if Station.station_map[y][x]:
+            global_vars.warn_popup.open("Station already existent here!")
             return
-        else:
-            Station.station_map[y][x] = self
+
+        if len(Line.line_map[y][x]) <= 0:
+            global_vars.warn_popup.open("Station needs a line to be placed!")
+            return
+
+        Station.station_map[y][x] = self
         #get name for station
         self.x = x
         self.y = y

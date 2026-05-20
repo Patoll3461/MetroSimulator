@@ -1,5 +1,6 @@
 import pygame
 
+import global_vars
 from constants import SCREEN_X, POPUP_X, SCREEN_Y, POPUP_Y, line_width, line_height, COLORS
 from line import Line
 from station import Station
@@ -137,8 +138,14 @@ class ColorPopup(Popup):
 
         #check if button is clicked
         if bg_rect.collidepoint(x, y):
+            #check if player selected a color
+            if self.selected is None:
+                global_vars.warn_popup.open("Please select a color!")
+                return
+
             #if the color is already in use abort
             if COLORS[self.selected] in [l.color for l in Line.lines]:
+                global_vars.warn_popup.open("Please select a color!")
                 return
 
             #close the popup by changing to new line mode
@@ -230,22 +237,29 @@ class StationPopup(Popup):
             name = self.name_input.text
 
             #check if name entered and name not yet used
-            if len(name) > 0 and name not in [s.name for s in Station.stations]:
-                if kwargs.get("station_x") is None and kwargs.get("station_y") is None:
-                    return
+            if len(name) <= 0:
+                global_vars.warn_popup.open("Please enter a name!")
+                return
 
-                #get old amount of stations
-                old_length = len(Station.stations)
-                #add station
-                Station(kwargs["station_x"], kwargs["station_y"], name)
+            if name in [s.name for s in Station.stations]:
+                global_vars.warn_popup.open("Station name already in use!")
 
-                #check if station creation was successfully
-                if old_length < len(Station.stations):
-                    #reset input and close popup
-                    self.name_input.text = ""
-                    self.name_input.focused = False
-                    self.name_input.color = pygame.Color(87, 157, 201)
-                    sm.change("BuildMode")
+            if kwargs.get("station_x") is None and kwargs.get("station_y") is None:
+                return
+
+            #get old amount of stations
+            old_length = len(Station.stations)
+            #add station
+            Station(kwargs["station_x"], kwargs["station_y"], name)
+
+            #check if station creation was successfully
+            if old_length < len(Station.stations):
+                #reset input and close popup
+                self.name_input.text = ""
+                self.name_input.focused = False
+                self.name_input.color = pygame.Color(87, 157, 201)
+                sm.change("BuildMode")
+
 
         #get close button rect
         close_text = self.font.render("X", True, (0, 0, 0))
@@ -326,7 +340,7 @@ class InputField:
             self.text = self.text[:-1]
             return
 
-        if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
+        if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_ESCAPE):
             return
 
         if not event.unicode:

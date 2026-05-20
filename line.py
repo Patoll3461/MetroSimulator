@@ -1,4 +1,6 @@
 import pygame
+
+import global_vars
 from constants import V_H_INDEX_ORDER, MAX_LINES
 
 
@@ -41,7 +43,7 @@ class Line:
         orientation = 0
 
         if self.check_if_tile_exists(x, y):
-            print("line already existent")
+            global_vars.warn_popup.open("Line already exists here!")
             return
 
         #if it is not the first tile of the line check what index the connecting piece is on
@@ -62,27 +64,27 @@ class Line:
             orientation = 0
 
         if orientation == 10:
-            print("cannot build new line here")
+            global_vars.warn_popup.open("Line needs connecting tile!")
             return
 
         #if the connecting index is not free try to adjust the index of all tiles in the line
         if h_index not in free_h_indexes:
             h_index = self.adjust_h_indexes(x, y)
             if h_index == 10:
-                print("no space here")
+                global_vars.warn_popup.open("No space here!")
                 return
         if v_index not in free_v_indexes:
             v_index = self.adjust_v_indexes(x, y)
             if v_index == 10:
-                print("no space here")
+                global_vars.warn_popup.open("No space here!")
                 return
 
         if self.check_if_triple(x, y):
-            print("cannot build triple intersections")
+            global_vars.warn_popup.open("Can not build triple intersections!")
             return
 
         if self.check_if_loop(x, y):
-            print("cannot build loops")
+            global_vars.warn_popup.open("Can not build loops!")
             return
 
         #add the tile to map and check if orientation of adjacent tiles needs to change
