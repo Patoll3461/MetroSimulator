@@ -24,6 +24,15 @@ class Camera:
         self.x = world_x - mx / self.zoom
         self.y = world_y - my / self.zoom
 
+        if self.x >= WORLD_X - (SCREEN_X / self.zoom):
+            self.x = WORLD_X - (SCREEN_X / self.zoom)
+        if self.x <= 0:
+            self.x = 0
+        if self.y >= WORLD_Y - (SCREEN_Y / self.zoom):
+            self.y = WORLD_Y - (SCREEN_Y / self.zoom)
+        if self.y <= 0:
+            self.y = 0
+
     def move(self, vector: tuple[int, int]):
         self.x += vector[0]
         self.y += vector[1]

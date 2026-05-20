@@ -100,7 +100,7 @@ def handle_mouse_move(events):
 
         if event.type == pygame.MOUSEMOTION and middle_held:
             dx, dy = event.rel
-            global_vars.camera.move((-dx, -dy))
+            global_vars.camera.move((-dx / global_vars.camera.zoom, -dy / global_vars.camera.zoom))
 
 
 def handle_scroll_wheel(events):
