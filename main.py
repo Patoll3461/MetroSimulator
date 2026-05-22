@@ -1,6 +1,8 @@
 import sys
 import pygame
+import math
 
+import seed
 from camera import Camera
 from constants import *
 import global_vars
@@ -10,13 +12,18 @@ from line import Line, LineState
 from map import metro_map, bg_map
 from popup import ColorPopup, StationPopup
 from state_machine import StateMachine, BuildMode, SelectMode, PopupMode, NewLineState
-from station import Station
+from station import Station, get_total_revenue
 from sprites import images, init_sprites
 
 
 def start():
     """Start the game and run the game loop."""
+    #initialize game seed
+    seed.init_seed()
+
     pygame.init()
+
+    frame = 0
 
     #initialize global variables and sprites
     global_vars.init()
@@ -48,6 +55,7 @@ def start():
     sm.change("SelectMode")
 
     while running:
+        frame += 1
         #get events
         events = pygame.event.get()
 
@@ -71,6 +79,12 @@ def start():
         sm.draw(screen)
         global_vars.warn_popup.draw(screen)
         pygame.display.flip()
+
+        if frame >= 60:
+            revenue = round(get_total_revenue())
+            global_vars.money += revenue
+            global_vars.mps = revenue
+            frame = 0
 
         clock.tick(60)
 
@@ -121,7 +135,7 @@ def draw_screen(screen: pygame.Surface, camera: Camera):
                         draw_edge(screen, lines[index].line.color, x, y + UI_HEIGHT, line_amount, lines[index].h_index, lines[index].v_index, line.orientation - 2)
 
             if Station.station_map[row_index][col_index]:
-                draw_circle(screen, pygame.Color(71, 186, 250), x, y + UI_HEIGHT)
+                draw_circle(screen, pygame.Color(71, 186, 250), x, y + UI_HEIGHT, col_index, row_index)
 
 def count_lines(lines: list[LineState]) -> tuple[int, int]:
     """Count the horizontal/vertical lines on a tile."""
@@ -171,12 +185,9 @@ def draw_vertical_edge_part(screen, color, x, y, line_amount, index, offset, hei
     """Draw the vertical part of the edge."""
     pygame.draw.rect(screen, color, (x + 0.25 * TILE_SIZE * global_vars.camera.zoom + index * LINE_WIDTH * global_vars.camera.zoom, y + offset, LINE_WIDTH * global_vars.camera.zoom, height))
 
-def draw_circle(screen, color, x, y):
+def draw_circle(screen, color, x, y, tile_x, tile_y):
     """Draw two circles for a station object."""
     size = 0.33
-
-    tile_x = int(x // TILE_SIZE)
-    tile_y = int((y - UI_HEIGHT) // TILE_SIZE)
 
     if len(Line.line_map[tile_y][tile_x]) >= 4:
         size = 0.5
@@ -212,20 +223,27 @@ def draw_ui(screen, font, game_state):
 
     #draw the build mode toggle button
     rect = pygame.draw.rect(screen, pygame.Color(39, 171, 166), (SCREEN_X - mode_button_offset - mode_button_width, UI_HEIGHT // 2 - mode_button_height // 2, mode_button_width, mode_button_height))
-    text = font.render("Select Mode" if game_state == "SelectMode" else "Build Mode", True, (0, 0, 0))
+    text = font.render("Select" if game_state == "SelectMode" else "Build", True, (0, 0, 0))
     text_rect = text.get_rect(center=rect.center)
     screen.blit(text, text_rect)
+
+    rect = pygame.Rect(SCREEN_X - mode_button_offset - mode_button_width - money_width - money_offset, UI_HEIGHT // 2 - money_height // 2, money_width, money_height)
+    pygame.draw.rect(screen, pygame.Color(39, 171, 166), rect)
+    pygame.draw.rect(screen, pygame.Color(0, 0, 0), rect, 3)
 
     #draw the current station text
     station_text = font.render(global_vars.selected_station, True, (0, 0, 0))
     station_text_rect = station_text.get_rect(midleft=(len(Line.lines) * line_width + line_offset + len(Line.lines) * line_distance + 50, UI_HEIGHT // 2))
     screen.blit(station_text, station_text_rect)
+    text = font.render(f"Money: {global_vars.money}", True, (0, 0, 0))
+    text_rect = text.get_rect(center=rect.center)
+    screen.blit(text, text_rect)
 
 def draw_map(col, row, x, y, screen):
     """Draw the background map."""
     if bg_map[row][col] is not None:
         #get original image
-        original_image = images[bg_map[row][col]]
+        original_image = images[bg_map[row][col].number]
 
         #scale it too math zoom
         scaled = pygame.transform.scale(

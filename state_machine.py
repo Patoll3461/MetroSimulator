@@ -88,8 +88,13 @@ class BuildMode(NonPopupState):
             pos = handle_left_mouse_event(event)
             if pos:
                 #build new line at pos
-                x = math.floor((pos[0] // global_vars.camera.zoom + global_vars.camera.x) / TILE_SIZE)
-                y = math.floor(((pos[1] - UI_HEIGHT) // global_vars.camera.zoom + global_vars.camera.y) / TILE_SIZE)
+                mx, my = pos
+
+                if my < UI_HEIGHT:
+                    return
+
+                x = math.floor((mx // global_vars.camera.zoom + global_vars.camera.x) / TILE_SIZE)
+                y = math.floor(((my - UI_HEIGHT) // global_vars.camera.zoom + global_vars.camera.y) / TILE_SIZE)
                 if y < 0:
                     return
                 y = int(y)
@@ -107,8 +112,13 @@ class BuildMode(NonPopupState):
             pos = handle_right_mouse_event(event)
             if pos:
                 #build station at pos
-                x = math.floor((pos[0] // global_vars.camera.zoom + global_vars.camera.x) / TILE_SIZE)
-                y = math.floor(((pos[1] - UI_HEIGHT) // global_vars.camera.zoom + global_vars.camera.y) / TILE_SIZE)
+                mx, my = pos
+
+                if my < UI_HEIGHT:
+                    return
+
+                x = math.floor((mx // global_vars.camera.zoom + global_vars.camera.x) / TILE_SIZE)
+                y = math.floor(((my - UI_HEIGHT) // global_vars.camera.zoom + global_vars.camera.y) / TILE_SIZE)
                 if y < 0:
                     return
                 y = int(y)

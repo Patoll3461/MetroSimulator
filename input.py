@@ -3,6 +3,7 @@ import pygame
 
 import global_vars
 import warn_popup
+from camera import Camera
 from constants import *
 from line import Line, delete_line
 from station import Station
@@ -45,6 +46,10 @@ def handle_build_key_down(event):
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_b:
             return True
+        if event.key == pygame.K_BACKSPACE:
+            global_vars.camera.zoom = 1
+            global_vars.camera.x = 0
+            global_vars.camera.y = 0
     return False
 
 def handle_left_click(event):
@@ -125,7 +130,3 @@ def handle_scroll_wheel(events):
                 global_vars.camera.change_zoom(0.1)
             if event.button == 133:
                 global_vars.camera.change_zoom(-0.1)
-
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_z:
-                global_vars.camera.zoom = 1

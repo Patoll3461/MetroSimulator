@@ -2,11 +2,13 @@ import random
 
 from constants import small_park_max_size, big_park_max_size, middle_park_max_size, max_settlement_size, max_industry_size
 from map import bg_map
+from tile import Tile
 
 #indexes in the sprite list of different tile types
 park_tiles = [0, 1, 5, 6, 18]
 street_tiles = [19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 14]
 house_tiles = [2, 7, 13, 15, 30]
+skyscraper_tiles = [3, 4, 11, 12, 16, 17]
 skyscraper_bottom_tiles = [3, 11, 16]
 skyscraper_top_tiles = [4, 12, 17]
 industry_tiles = [8, 9, 10]
@@ -16,6 +18,24 @@ street_tiles_left_open = [19, 21, 22, 25, 26, 28, 29]
 street_tiles_right_open = [19, 21, 23, 24, 26, 27, 28]
 street_tiles_up_open = [20, 21, 22, 23, 26, 27, 29]
 street_tiles_down_open = [20, 21, 24, 25, 27, 28, 29]
+
+#population factors
+park_population_factor = 20
+street_population_factor = 40
+settlement_population_factor = 120
+industry_population_factor = 230
+skyscraper_population_factor = 450
+
+#quality factors
+park_quality_factor = 1.02
+industry_quality_factor = 0.985
+settlement_quality_factor = 0.998
+street_quality_factor = 1
+skyscraper_quality_factor = 0.996
+
+population_factors = [street_population_factor, park_population_factor, settlement_population_factor, industry_population_factor, skyscraper_population_factor]
+quality_factors = [street_quality_factor, park_quality_factor, settlement_quality_factor, industry_quality_factor, skyscraper_quality_factor]
+tile_types = [street_tiles, park_tiles, house_tiles, industry_tiles, skyscraper_tiles]
 
 #weights when placing a street, straight street has weight 30, crossings have weight 2, triple intersections and curves have weight 1
 weights = [30, 2, 1, 1, 1, 1, 1]
@@ -64,6 +84,8 @@ def generate_map():
 
     #adjust the orientation of all street tiles to fit
     adjust_orientation()
+
+    convert_to_tile_object()
 
 
 def generate_tile_left(current, prev):
@@ -308,3 +330,12 @@ def get_coordinates():
     y = random.randint(0, 17)
 
     return x,y
+
+def convert_to_tile_object():
+    for row_index, row in enumerate(bg_map):
+        for col_index, tile in enumerate(row):
+            for index, tile_type in enumerate(tile_types):
+                if tile in tile_type:
+                    population = random.randint(population_factors[index], 3 * population_factors[index])
+                    bg_map[row_index][col_index] = Tile(tile, population, quality_factors[index])
+

@@ -1,7 +1,9 @@
+from math import sqrt
+
 import pygame
 
 import global_vars
-from constants import V_H_INDEX_ORDER, MAX_LINES
+from constants import V_H_INDEX_ORDER, MAX_LINES, LINE_BASE_PRICE
 from generator import street_tiles, park_tiles, street_tiles_up_open, street_tiles_down_open, street_tiles_left_open, street_tiles_right_open
 from map import bg_map
 
@@ -10,7 +12,7 @@ class Line:
     """This class defines individual lines"""
     line_index = 0
     lines = []
-    line_map = [[[] for _ in range(31)] for _ in range(21)]
+    line_map = [[[] for _ in range(31)] for _ in range(20)]
 
     def __init__(self, start_x, start_y, color: pygame.Color):
         """Initialize line object."""
@@ -92,10 +94,12 @@ class Line:
             global_vars.warn_popup.open("Can not build triple intersections!")
             return
 
-        #i decided to allow loops
-        #if self.check_if_loop(x, y):
-        #    global_vars.warn_popup.open("Can not build loops!")
-        #    return
+        #check if money is present
+        payed, price = global_vars.check_money(LINE_BASE_PRICE, global_vars.line_min_price)
+        if not payed:
+            global_vars.warn_popup.open(f"Insufficient money! Need {price}!")
+            return
+        global_vars.line_min_price = price
 
         #add the tile to map and check if orientation of adjacent tiles needs to change
         Line.line_map[y][x].append(LineState(self, orientation, h_index, v_index, x, y))
@@ -115,7 +119,7 @@ class Line:
         indexes = []
 
         #if current tile is park tile perform normal adjacent search
-        if bg_map[y][x] in park_tiles:
+        if bg_map[y][x].number in park_tiles:
             for index, adjacent_tile in enumerate(adjacent_tiles):
                 for line_state in adjacent_tile:
                     if line_state.line.color == self.color:
@@ -124,21 +128,21 @@ class Line:
         else:
             for index, adjacent_tile in enumerate(adjacent_tiles):
                 for line_state in adjacent_tile:
-                    if line_state.line.color == self.color and bg_map[adjacent_coords[index][1]][adjacent_coords[index][0]] in park_tiles:
+                    if line_state.line.color == self.color and bg_map[adjacent_coords[index][1]][adjacent_coords[index][0]].number in park_tiles:
                         indexes.append(index)
 
         #check if there are adjacent tiles which can connect
         for line_state in adjacent_tiles[0]:
-            if line_state.line.color == self.color and bg_map[adjacent_coords[0][1]][adjacent_coords[0][0]] in street_tiles_right_open:
+            if line_state.line.color == self.color and bg_map[adjacent_coords[0][1]][adjacent_coords[0][0]].number in street_tiles_right_open:
                 indexes.append(0)
         for line_state in adjacent_tiles[1]:
-            if line_state.line.color == self.color and bg_map[adjacent_coords[1][1]][adjacent_coords[1][0]] in street_tiles_down_open:
+            if line_state.line.color == self.color and bg_map[adjacent_coords[1][1]][adjacent_coords[1][0]].number in street_tiles_down_open:
                 indexes.append(1)
         for line_state in adjacent_tiles[2]:
-            if line_state.line.color == self.color and bg_map[adjacent_coords[2][1]][adjacent_coords[2][0]] in street_tiles_left_open:
+            if line_state.line.color == self.color and bg_map[adjacent_coords[2][1]][adjacent_coords[2][0]].number in street_tiles_left_open:
                 indexes.append(2)
         for line_state in adjacent_tiles[3]:
-            if line_state.line.color == self.color and bg_map[adjacent_coords[3][1]][adjacent_coords[3][0]] in street_tiles_up_open:
+            if line_state.line.color == self.color and bg_map[adjacent_coords[3][1]][adjacent_coords[3][0]].number in street_tiles_up_open:
                 indexes.append(3)
 
         #set orientation accordingly
@@ -305,7 +309,7 @@ class Line:
         #get amount of bordering tiles
 
         #if the tile is park perform normal adjacent search
-        if bg_map[y][x] in park_tiles:
+        if bg_map[y][x].number in park_tiles:
             for index, adjacent_tile in enumerate(adjacent_tiles):
                 for line_state in adjacent_tile:
                     if line_state.line.color == self.color:
@@ -314,22 +318,22 @@ class Line:
         else:
             for index, adjacent_tile in enumerate(adjacent_tiles):
                 for line_state in adjacent_tile:
-                    if line_state.line.color == self.color and bg_map[adjacent_coords[index][1]][adjacent_coords[index][0]] in park_tiles:
+                    if line_state.line.color == self.color and bg_map[adjacent_coords[index][1]][adjacent_coords[index][0]].number in park_tiles:
                         indexes.append(index)
 
 
         #add all adjacent tiles that can connect
         for line_state in adjacent_tiles[0]:
-            if line_state.line.color == self.color and bg_map[adjacent_coords[0][1]][adjacent_coords[0][0]] in street_tiles_right_open:
+            if line_state.line.color == self.color and bg_map[adjacent_coords[0][1]][adjacent_coords[0][0]].number in street_tiles_right_open:
                 indexes.append(0)
         for line_state in adjacent_tiles[1]:
-            if line_state.line.color == self.color and bg_map[adjacent_coords[1][1]][adjacent_coords[1][0]] in street_tiles_down_open:
+            if line_state.line.color == self.color and bg_map[adjacent_coords[1][1]][adjacent_coords[1][0]].number in street_tiles_down_open:
                 indexes.append(1)
         for line_state in adjacent_tiles[2]:
-            if line_state.line.color == self.color and bg_map[adjacent_coords[2][1]][adjacent_coords[2][0]] in street_tiles_left_open:
+            if line_state.line.color == self.color and bg_map[adjacent_coords[2][1]][adjacent_coords[2][0]].number in street_tiles_left_open:
                 indexes.append(2)
         for line_state in adjacent_tiles[3]:
-            if line_state.line.color == self.color and bg_map[adjacent_coords[3][1]][adjacent_coords[3][0]] in street_tiles_up_open:
+            if line_state.line.color == self.color and bg_map[adjacent_coords[3][1]][adjacent_coords[3][0]].number in street_tiles_up_open:
                 indexes.append(3)
 
         #if 3 or more bordering tiles exist, there is a triple intersection
@@ -340,18 +344,18 @@ class Line:
             return 0
         else:
             #when there are two adjacent tiles check if the new tile is adjacent as well, in which case building it would result in a triple intersection
-            if (new_x, new_y) == adjacent_coords[0] and bg_map[adjacent_coords[0][1]][adjacent_coords[0][0]] in street_tiles_right_open:
+            if (new_x, new_y) == adjacent_coords[0] and bg_map[adjacent_coords[0][1]][adjacent_coords[0][0]].number in street_tiles_right_open:
                 return 10
-            if (new_x, new_y) == adjacent_coords[1] and bg_map[adjacent_coords[1][1]][adjacent_coords[1][0]] in street_tiles_down_open:
+            if (new_x, new_y) == adjacent_coords[1] and bg_map[adjacent_coords[1][1]][adjacent_coords[1][0]].number in street_tiles_down_open:
                 return 10
-            if (new_x, new_y) == adjacent_coords[2] and bg_map[adjacent_coords[2][1]][adjacent_coords[2][0]] in street_tiles_left_open:
+            if (new_x, new_y) == adjacent_coords[2] and bg_map[adjacent_coords[2][1]][adjacent_coords[2][0]].number in street_tiles_left_open:
                 return 10
-            if (new_x, new_y) == adjacent_coords[3] and bg_map[adjacent_coords[3][1]][adjacent_coords[3][0]] in street_tiles_up_open:
+            if (new_x, new_y) == adjacent_coords[3] and bg_map[adjacent_coords[3][1]][adjacent_coords[3][0]].number in street_tiles_up_open:
                 return 10
-            if bg_map[y][x] in park_tiles:
+            if bg_map[y][x].number in park_tiles:
                 if (new_x, new_y) in adjacent_coords:
                     return 10
-            if bg_map[new_y][new_x] in park_tiles:
+            if bg_map[new_y][new_x].number in park_tiles:
                 if (new_x, new_y) in adjacent_coords:
                     return 10
 
@@ -376,7 +380,7 @@ class Line:
 
 def check_if_street(x, y):
     """Checks if the tile at given position is a street or park tile."""
-    if bg_map[y][x] in street_tiles or bg_map[y][x] in park_tiles:
+    if bg_map[y][x].number in street_tiles or bg_map[y][x].number in park_tiles:
         return True
 
     return False

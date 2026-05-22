@@ -16,7 +16,7 @@ SCREEN_X = 960
 SCREEN_Y = 640
 #world size
 WORLD_X = 1920
-WORLD_Y = 1280
+WORLD_Y = 1152
 #height of ui bar
 UI_HEIGHT = 64
 #maximum number of lines
@@ -28,12 +28,25 @@ POPUP_Y = 320
 #available colors for lines
 COLORS = [pygame.Color(255, 0, 0), pygame.Color(0, 255, 0), pygame.Color(0, 0, 255), pygame.Color(255, 255, 0), pygame.Color(0, 255, 255), pygame.Color(255, 0, 255), pygame.Color(166, 255, 192), pygame.Color(255, 145, 0), pygame.Color(250, 186, 255), pygame.Color(60, 46, 128)]
 
+#radius of a station
+STATION_RADIUS = 3
+
+#prices
+LINE_BASE_PRICE = 30
+STATION_BASE_PRICE = 60
+START_MONEY = 1000
+
 #UI constants
 
 #mode toggle button
 mode_button_offset = 30
-mode_button_width = 256
+mode_button_width = 128
 mode_button_height = 32
+
+#money
+money_offset = 30
+money_width = 192
+money_height = 32
 
 #line buttons
 line_offset = 10

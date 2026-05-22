@@ -31,12 +31,16 @@ class Camera:
         self.y = world_y - (my - UI_HEIGHT) / self.zoom
 
         #clamp position
-        if self.x >= WORLD_X - (SCREEN_X / self.zoom):
-            self.x = WORLD_X - (SCREEN_X / self.zoom)
+        visible_width = SCREEN_X / self.zoom
+        visible_height = (SCREEN_Y - UI_HEIGHT) / self.zoom
+
+        if self.x >= WORLD_X - visible_width:
+            self.x = WORLD_X - visible_width
         if self.x <= 0:
             self.x = 0
-        if self.y >= WORLD_Y - (SCREEN_Y / self.zoom):
-            self.y = WORLD_Y - (SCREEN_Y / self.zoom)
+
+        if self.y >= WORLD_Y - visible_height:
+            self.y = WORLD_Y - visible_height
         if self.y <= 0:
             self.y = 0
 
@@ -49,11 +53,15 @@ class Camera:
         self.y += vector[1]
 
         #clamp pos
-        if self.x >= WORLD_X - (SCREEN_X / self.zoom):
-            self.x = WORLD_X - (SCREEN_X / self.zoom)
+        visible_width = SCREEN_X / self.zoom
+        visible_height = (SCREEN_Y - UI_HEIGHT) / self.zoom
+
+        if self.x >= WORLD_X - visible_width:
+            self.x = WORLD_X - visible_width
         if self.x <= 0:
             self.x = 0
-        if self.y >= WORLD_Y - (SCREEN_Y / self.zoom):
-            self.y = WORLD_Y - (SCREEN_Y / self.zoom)
+
+        if self.y >= WORLD_Y - visible_height:
+            self.y = WORLD_Y - visible_height
         if self.y <= 0:
             self.y = 0
