@@ -111,7 +111,7 @@ class Line:
 
     def check_orientation(self, x, y, is_for_new_tile=False):
         """Checks what orientation a tile at given position should be.
-         This function seems like a complete mess.
+         This function is a complete mess.
          It is probably the worst part of the entire game.
          Good Luck."""
         orientation = 0
