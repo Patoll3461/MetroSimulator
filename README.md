@@ -53,6 +53,8 @@ A more fitting name would be "Tram Builder"
 
 ## Modes
 
+---
+
 - There are two modes:
 - - Build Mode
 - - Select Mode
@@ -61,11 +63,15 @@ A more fitting name would be "Tram Builder"
 
 ## Camera
 
+---
+
 - You can look around by holding the middle mouse button down and moving the mouse
 - You can zoom by using the scroll wheel
 - You can reset zoom and position by pressing Backspace
 
 ## Tile Types
+
+---
 
 - There are 5 types of tiles:
 
@@ -98,6 +104,8 @@ A more fitting name would be "Tram Builder"
 
 ## Population and Quality Factor
 
+---
+
 - Each Tile has a Quality Factor and a Population dependent on its type:
 
 | Tile type   | Population | Quality factor |
@@ -112,6 +120,8 @@ A more fitting name would be "Tram Builder"
 
 ## Money
 
+---
+
 - Money is earnt every second per station per line
 - The money is determined by 
 - - The amount of stations on the line
@@ -125,6 +135,8 @@ A more fitting name would be "Tram Builder"
 - - Start Money: 1000
 
 ## World Generation
+
+---
 
 - The world gets generated in 6 steps:
 1. Generate streets from the middle outwards
