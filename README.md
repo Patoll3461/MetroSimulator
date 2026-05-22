@@ -24,6 +24,8 @@
 
 - [Resource Sources](#resource-sources)
 
+- [Known Issues](#known-issues)
+
 ## Lines
 
 - Add a new line by clicking the button labeled "+" in the top right
@@ -165,5 +167,7 @@ python3 main.py --seed <seed>
 Some Tiles have been modified or put together to create new ones.
 
 
+## Known Issues
 
+- Sometimes placing a station on the topmost y point will not work (might be fixed?)
 
