@@ -28,9 +28,9 @@
 
 ## Lines
 
-- Add a new line by clicking the button labeled "+" in the top right
-- Remove a line by right clicking its icon in the top right
-- In Build Mode, select a line in the top right and click anywhere to build, however there are some restrictions:
+- Add a new line by clicking the button labeled "+" in the top left
+- Remove a line by right clicking its icon in the top left
+- In Build Mode, select a line in the top left and click anywhere to build, however there are some restrictions:
 - - The line needs a connecting part
 - - The player must have sufficient money
 - - There may be no triple intersections
@@ -139,7 +139,7 @@
 5. Fill remaining tiles with settlements
 6. Give each tile a population within its range
 
-- The world generation can result in some tiles being out of range of stations, making the game harder or less fun,
+- The world generation can result in some tiles being out of range of stations, making the game harder or less fun
 - Because of this, it is possibly to start the game with the flag --seed
 
 ```
