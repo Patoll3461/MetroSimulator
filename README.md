@@ -170,4 +170,5 @@ Some Tiles have been modified or put together to create new ones.
 ## Known Issues
 
 - Sometimes placing a station on the topmost y point will not work (might be fixed?)
-
+- When putting the game in fullscreen and hovering out of the world area the game will crash (As far as I am aware its not possible to fullscreen the game on Windows, so there is no need to fix it)
+- Window size might be too small on 1440p or 4k monitors, so increasing display scale is recommended
