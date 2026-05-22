@@ -39,6 +39,8 @@ class Station:
         self.population = self.get_population_in_radius()
         self.quality_factor = self.get_quality_factor()
 
+        global_vars.selected_station = self.name
+
         Station.stations.append(self)
 
     def get_population_in_radius(self):
