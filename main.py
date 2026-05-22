@@ -1,6 +1,5 @@
-import pygame
 import sys
-import math
+import pygame
 
 from camera import Camera
 from constants import *
@@ -12,17 +11,18 @@ from map import metro_map, bg_map
 from popup import ColorPopup, StationPopup
 from state_machine import StateMachine, BuildMode, SelectMode, PopupMode, NewLineState
 from station import Station
-from sprites import images
+from sprites import images, init_sprites
 
-build_mode = False
 
 def start():
     """Start the game and run the game loop."""
-    global build_mode
     pygame.init()
 
+    #initialize global variables and sprites
     global_vars.init()
+    init_sprites()
 
+    #generate the map
     generate_map()
 
     screen = pygame.display.set_mode((SCREEN_X, SCREEN_Y))
@@ -222,14 +222,18 @@ def draw_ui(screen, font, game_state):
     screen.blit(station_text, station_text_rect)
 
 def draw_map(col, row, x, y, screen):
+    """Draw the background map."""
     if bg_map[row][col] is not None:
+        #get original image
         original_image = images[bg_map[row][col]]
 
+        #scale it too math zoom
         scaled = pygame.transform.scale(
             original_image,
             (int(math.ceil(TILE_SIZE * global_vars.camera.zoom)), int(math.ceil(TILE_SIZE * global_vars.camera.zoom)))
         )
 
+        #render
         screen.blit(scaled, (x, y + UI_HEIGHT))
 
 if __name__ == "__main__":

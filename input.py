@@ -4,7 +4,7 @@ import pygame
 import global_vars
 import warn_popup
 from constants import *
-from line import Line
+from line import Line, delete_line
 from station import Station
 
 middle_held = False
@@ -41,11 +41,9 @@ def handle_line_key_down(event, line_index):
     return line_index
 
 def handle_build_key_down(event):
-    """Toggle build mode if K is pressed."""
+    """Toggle build mode if B is pressed."""
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_b:
-            global_vars.camera.x = 14 * TILE_SIZE
-            #print("test")
             return True
     return False
 
@@ -53,6 +51,7 @@ def handle_left_click(event):
     """Handle left click in select mode."""
     if event.type == pygame.MOUSEBUTTONDOWN:
         if event.button == 1:
+            #get screen pos and convert to world
             x = math.floor((global_vars.camera.x + event.pos[0] / global_vars.camera.zoom) / TILE_SIZE)
             y = math.floor((global_vars.camera.y + (event.pos[1] - UI_HEIGHT) / global_vars.camera.zoom) / TILE_SIZE)
 
@@ -60,6 +59,7 @@ def handle_left_click(event):
                 return
             y = int(y)
             if Station.station_map[y][x]:
+                #set selected station to the station at clickd tile pos
                 global_vars.selected_station = Station.station_map[y][x].name
 
 def handle_ui_click(event, sm):
@@ -86,6 +86,18 @@ def handle_ui_click(event, sm):
                     else:
                         #if the plus button was clicked show the select color popup
                         sm.change("ColorPopupMode")
+
+        if event.button == 3:
+            x,y = event.pos
+
+            # check if a line button was clicked
+            for i in range(len(Line.lines) + 1):
+                rect = pygame.Rect(i * line_width + line_offset + i * line_distance, UI_HEIGHT // 2 - line_height // 2,
+                                   line_width, line_height)
+
+                if rect.collidepoint(float(x), float(y)):
+                    if i < len(Line.lines):
+                        delete_line(i)
 
 def handle_mouse_move(events):
     global middle_held

@@ -41,9 +41,13 @@ line_distance = 8
 line_width = 32
 line_height = 32
 
+#max size for park clusters
 big_park_max_size = 25
 middle_park_max_size = 15
 small_park_max_size = 8
 
+#max size for settlement cluster
 max_settlement_size = 20
+
+#max size for industry cluster
 max_industry_size = 5

@@ -48,6 +48,7 @@ class Line:
             global_vars.warn_popup.open("Line already exists here!")
             return
 
+        #check if the tile is a street or park
         if not check_if_street(x, y):
             global_vars.warn_popup.open("Can only build on street or parks!")
             return
@@ -66,9 +67,11 @@ class Line:
         free_h_indexes, free_v_indexes = get_free_indexes(x, y)
         orientation = self.check_orientation(x, y, True)
 
+        #if its the first tile auto set orientation
         if is_first:
             orientation = 0
 
+        #if the orientation is invalid give error
         if orientation == 10:
             global_vars.warn_popup.open("Line needs connecting tile!")
             return
@@ -102,23 +105,29 @@ class Line:
         self.adjust_orientation(x, y)
 
     def check_orientation(self, x, y, is_for_new_tile=False):
-        """Checks what orientation a tile at given position should be."""
+        """Checks what orientation a tile at given position should be.
+         This function seems like a complete mess.
+         It is probably the worst part of the entire game.
+         Good Luck."""
         orientation = 0
         adjacent_tiles = [Line.line_map[y][x - 1], Line.line_map[y - 1][x], Line.line_map[y][x + 1], Line.line_map[y + 1][x]]
         adjacent_coords = [(x - 1, y), (x, y - 1), (x + 1, y), (x, y + 1)]
         indexes = []
 
+        #if current tile is park tile perform normal adjacent search
         if bg_map[y][x] in park_tiles:
             for index, adjacent_tile in enumerate(adjacent_tiles):
                 for line_state in adjacent_tile:
                     if line_state.line.color == self.color:
                         indexes.append(index)
+        #if not add all adjacent park tiles with line automatically
         else:
             for index, adjacent_tile in enumerate(adjacent_tiles):
                 for line_state in adjacent_tile:
                     if line_state.line.color == self.color and bg_map[adjacent_coords[index][1]][adjacent_coords[index][0]] in park_tiles:
                         indexes.append(index)
 
+        #check if there are adjacent tiles which can connect
         for line_state in adjacent_tiles[0]:
             if line_state.line.color == self.color and bg_map[adjacent_coords[0][1]][adjacent_coords[0][0]] in street_tiles_right_open:
                 indexes.append(0)
@@ -131,11 +140,8 @@ class Line:
         for line_state in adjacent_tiles[3]:
             if line_state.line.color == self.color and bg_map[adjacent_coords[3][1]][adjacent_coords[3][0]] in street_tiles_up_open:
                 indexes.append(3)
-        #for index, tile in enumerate(adjacent_tiles):
-        #    for line_state in tile:
-        #        if line_state.line.color == self.color:
-        #                indexes.append(index)
 
+        #set orientation accordingly
         if len(indexes) == 1:
             i = indexes[0]
             if i == 0 or i == 2:
@@ -297,11 +303,14 @@ class Line:
         adjacent_coords = [(x - 1, y), (x, y - 1), (x + 1, y), (x, y + 1)]
         indexes = []
         #get amount of bordering tiles
+
+        #if the tile is park perform normal adjacent search
         if bg_map[y][x] in park_tiles:
             for index, adjacent_tile in enumerate(adjacent_tiles):
                 for line_state in adjacent_tile:
                     if line_state.line.color == self.color:
                         indexes.append(index)
+        #if not add any adjacent park tiles with a line
         else:
             for index, adjacent_tile in enumerate(adjacent_tiles):
                 for line_state in adjacent_tile:
@@ -309,6 +318,7 @@ class Line:
                         indexes.append(index)
 
 
+        #add all adjacent tiles that can connect
         for line_state in adjacent_tiles[0]:
             if line_state.line.color == self.color and bg_map[adjacent_coords[0][1]][adjacent_coords[0][0]] in street_tiles_right_open:
                 indexes.append(0)
@@ -341,6 +351,9 @@ class Line:
             if bg_map[y][x] in park_tiles:
                 if (new_x, new_y) in adjacent_coords:
                     return 10
+            if bg_map[new_y][new_x] in park_tiles:
+                if (new_x, new_y) in adjacent_coords:
+                    return 10
 
 
         return orientation
@@ -362,6 +375,7 @@ class Line:
         return orientation
 
 def check_if_street(x, y):
+    """Checks if the tile at given position is a street or park tile."""
     if bg_map[y][x] in street_tiles or bg_map[y][x] in park_tiles:
         return True
 
@@ -380,6 +394,22 @@ def get_free_indexes(x, y):
     free_v_indexes = [v for v in V_H_INDEX_ORDER if v not in occupied_v_indexes]
 
     return free_h_indexes, free_v_indexes
+
+
+def delete_line(index):
+    """Delete the line with the specified index."""
+    #get line color
+    color = Line.lines[index].color
+
+    #delete line from list
+    Line.lines.pop(index)
+    #loop over map
+    for row_index, row in enumerate(Line.line_map):
+        for col_index, col in enumerate(row):
+            for index, line_state in enumerate(col):
+                #delete all line states with the line that needs to be deleted
+                if line_state.line.color == color:
+                    Line.line_map[row_index][col_index].pop(index)
 
 
 class LineState:
