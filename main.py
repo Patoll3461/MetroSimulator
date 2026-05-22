@@ -202,19 +202,20 @@ def draw_ui(screen, font, game_state):
             rect = pygame.draw.rect(screen, line.color, (i * line_width + line_offset + i * line_distance, UI_HEIGHT / 2 - line_height / 2, line_width, line_height))
             #draw an outline on selected line
             if i == Line.line_index:
-                pygame.draw.rect(screen, (0, 0, 0), rect, 2)
+                pygame.draw.rect(screen, (0, 0, 0), rect, 3)
                 #draw the number text
             number = font.render(str(i + 1), True, (0, 0, 0))
             text_rect = number.get_rect(center=rect.center)
             screen.blit(number, text_rect)
         else:
             #draw the add line button
-            rect = pygame.Rect(i * line_width + line_offset + i * line_distance, UI_HEIGHT // 2 - line_height // 2, line_width, line_height)
-            pygame.draw.rect(screen, (255, 255, 255), rect)
-            pygame.draw.rect(screen, (0, 0, 0), rect, 2)
-            number = font.render("+", True, (0, 0, 0))
-            text_rect = number.get_rect(center=rect.center)
-            screen.blit(number, text_rect)
+            if len(Line.lines) < 10:
+                rect = pygame.Rect(i * line_width + line_offset + i * line_distance, UI_HEIGHT // 2 - line_height // 2, line_width, line_height)
+                pygame.draw.rect(screen, (255, 255, 255), rect)
+                pygame.draw.rect(screen, (0, 0, 0), rect, 2)
+                number = font.render("+", True, (0, 0, 0))
+                text_rect = number.get_rect(center=rect.center)
+                screen.blit(number, text_rect)
 
     #draw the build mode toggle button
     rect = pygame.draw.rect(screen, pygame.Color(39, 171, 166), (SCREEN_X - mode_button_offset - mode_button_width, UI_HEIGHT // 2 - mode_button_height // 2, mode_button_width, mode_button_height))
@@ -222,14 +223,19 @@ def draw_ui(screen, font, game_state):
     text_rect = text.get_rect(center=rect.center)
     screen.blit(text, text_rect)
 
+    #draw the current station text
+    station_text = font.render(global_vars.selected_station, True, (0, 0, 0))
+    if len(Line.lines) == 10:
+        x = len(Line.lines) * line_width + line_offset + len(Line.lines) * line_distance + 50 - line_width - line_offset
+    else:
+        x = len(Line.lines) * line_width + line_offset + len(Line.lines) * line_distance + 50
+    station_text_rect = station_text.get_rect(midleft=(x, UI_HEIGHT // 2))
+    screen.blit(station_text, station_text_rect)
+
+    #draw the money text
     rect = pygame.Rect(SCREEN_X - mode_button_offset - mode_button_width - money_width - money_offset, UI_HEIGHT // 2 - money_height // 2, money_width, money_height)
     pygame.draw.rect(screen, pygame.Color(39, 171, 166), rect)
     pygame.draw.rect(screen, pygame.Color(0, 0, 0), rect, 3)
-
-    #draw the current station text
-    station_text = font.render(global_vars.selected_station, True, (0, 0, 0))
-    station_text_rect = station_text.get_rect(midleft=(len(Line.lines) * line_width + line_offset + len(Line.lines) * line_distance + 50, UI_HEIGHT // 2))
-    screen.blit(station_text, station_text_rect)
     text = font.render(f"Money: {global_vars.money}", True, (0, 0, 0))
     text_rect = text.get_rect(center=rect.center)
     screen.blit(text, text_rect)

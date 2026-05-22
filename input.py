@@ -29,15 +29,15 @@ def handle_line_key_down(event, line_index):
 
     #last line
     if event.key == pygame.K_LEFT:
-        line_index += 1
-        if line_index >= len(Line.lines):
-            line_index = 0
-
-    #next line
-    if event.key == pygame.K_RIGHT:
         line_index -= 1
         if line_index < 0:
             line_index = len(Line.lines) - 1
+
+    #next line
+    if event.key == pygame.K_RIGHT:
+        line_index += 1
+        if line_index >= len(Line.lines):
+            line_index = 0
 
     return line_index
 
@@ -89,8 +89,9 @@ def handle_ui_click(event, sm):
                     if i < len(Line.lines):
                         Line.line_index = i
                     else:
-                        #if the plus button was clicked show the select color popup
-                        sm.change("ColorPopupMode")
+                        if len(Line.lines) < 10:
+                            #if the plus button was clicked show the select color popup
+                            sm.change("ColorPopupMode")
 
         if event.button == 3:
             x,y = event.pos

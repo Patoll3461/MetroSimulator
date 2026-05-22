@@ -111,13 +111,7 @@ class BuildMode(NonPopupState):
                 if Line.line_index < len(Line.lines):
                     Line.lines[Line.line_index].add_tile(x, y)
 
-            #change line if arrow key pressed
-            old_index = Line.line_index
             Line.line_index = handle_line_key_down(event, Line.line_index)
-
-            #check if line changed
-            if Line.line_index != old_index:
-                print(f"Switched to {Line.lines[Line.line_index]}")
 
             #check if right key pressed
             pos = handle_right_mouse_event(event)

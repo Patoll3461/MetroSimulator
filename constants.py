@@ -39,18 +39,18 @@ START_MONEY = 1000
 #UI constants
 
 #mode toggle button
-mode_button_offset = 30
-mode_button_width = 128
+mode_button_offset = 15
+mode_button_width = 92
 mode_button_height = 32
 
 #money
-money_offset = 30
+money_offset = 10
 money_width = 192
 money_height = 32
 
 #line buttons
 line_offset = 10
-line_distance = 8
+line_distance = 4
 line_width = 32
 line_height = 32
 
