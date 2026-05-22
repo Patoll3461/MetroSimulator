@@ -106,7 +106,9 @@ class BuildMode(NonPopupState):
                 if y < 0:
                     return
                 y = int(y)
-                Line.lines[Line.line_index].add_tile(x, y)
+
+                if Line.line_index < len(Line.lines):
+                    Line.lines[Line.line_index].add_tile(x, y)
 
             #change line if arrow key pressed
             old_index = Line.line_index
@@ -166,6 +168,8 @@ class PopupMode(BaseState):
 
         if type(self.popup) == StationPopup:
             self.popup.set_position(self.x, self.y)
+
+        self.popup.open()
 
     def exit(self):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
@@ -238,3 +242,10 @@ class NewLineState(BaseState):
             return
 
         metro_map[y][x] = 2
+
+        #if one second has passed get revenue
+        if global_vars.frame >= 60:
+            revenue = round(get_total_revenue())
+            global_vars.money += revenue
+            global_vars.mps = revenue
+            global_vars.frame = 0

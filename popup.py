@@ -16,6 +16,7 @@ class Popup:
     def capture_input(self, events): pass
     def is_clicked(self, x, y, sm): pass
     def close(self, sm): pass
+    def open(self): pass
 
 
 class ColorPopup(Popup):
@@ -292,6 +293,10 @@ class StationPopup(Popup):
             self.name_input.color = pygame.Color(87, 157, 201)
             sm.change("BuildMode")
 
+    def open(self):
+        """Execute this when popup opens."""
+        self.name_input.text = ""
+
 
 class InputField:
     """Class for the input field."""
@@ -358,6 +363,7 @@ class InputField:
 
         if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
             self.parent.submit(self.sm)
+            return
 
         if not event.unicode:
             return
