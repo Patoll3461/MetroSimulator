@@ -113,7 +113,8 @@ A more fitting name would be "Tram Builder"
 
 ## Money
 
-- Money is earnt every second per station per line
+- Money is earned every second per station per line
+- Money is not earned while a popup is open
 - The money is determined by 
 - - The amount of stations on the line
 - - The Population around each station

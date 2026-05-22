@@ -46,7 +46,10 @@ def check_money(base_price, minimum):
     global money
 
     #calculate prise based of base price, current money per second and minimum
-    price = max(minimum, round(base_price * (1 + 0.1 * math.log2(1 + mps))))
+    price = max(
+        minimum,
+        round(base_price * (1 + 0.05 * math.log2(1 + mps) + 0.0005 * mps))
+    )
 
     #return the price
     if money < price:
