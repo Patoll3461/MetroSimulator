@@ -13,10 +13,11 @@ class Popup:
         self.color = color
         self.font = font
     def draw(self, screen: pygame.Surface): pass
-    def capture_input(self, events): pass
+    def capture_input(self, events, sm): pass
     def is_clicked(self, x, y, sm): pass
     def close(self, sm): pass
     def open(self): pass
+    def submit(self, sm): pass
 
 
 class ColorPopup(Popup):
@@ -139,21 +140,7 @@ class ColorPopup(Popup):
 
         #check if button is clicked
         if bg_rect.collidepoint(x, y):
-            #check if player selected a color
-            if self.selected is None:
-                global_vars.warn_popup.open("Please select a color!")
-                return
-
-            #if the color is already in use abort
-            if COLORS[self.selected] in [l.color for l in Line.lines]:
-                global_vars.warn_popup.open("Please select a color!")
-                return
-
-            #close the popup by changing to new line mode
-            sm.change("NewLineMode")
-            #set the color of new line
-            sm.states[sm.current_state].set_color(COLORS[self.selected])
-            self.selected = None
+            self.submit(sm)
 
         #get rect for close button
         close_text = self.font.render("X", True, (0, 0, 0))
@@ -168,6 +155,31 @@ class ColorPopup(Popup):
     def close(self, sm):
         """Function to close popup."""
         sm.change("BuildMode")
+
+    def capture_input(self, events, sm):
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.close(sm)
+                if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
+                    self.submit(sm)
+
+    def submit(self, sm):
+        # check if player selected a color
+        if self.selected is None:
+            global_vars.warn_popup.open("Please select a color!")
+            return
+
+        # if the color is already in use abort
+        if COLORS[self.selected] in [l.color for l in Line.lines]:
+            global_vars.warn_popup.open("Please select a color!")
+            return
+
+        # close the popup by changing to new line mode
+        sm.change("NewLineMode")
+        # set the color of new line
+        sm.states[sm.current_state].set_color(COLORS[self.selected])
+        self.selected = None
 
 
 class StationPopup(Popup):
@@ -252,7 +264,7 @@ class StationPopup(Popup):
             #close popup
             self.close(sm)
 
-    def capture_input(self, events):
+    def capture_input(self, events, sm):
         """Get Input for the Input Field."""
         for event in events:
             if event.type == pygame.KEYDOWN:
@@ -351,14 +363,15 @@ class InputField:
 
     def add_letter(self, event):
         """Add a letter to the input."""
+        if event.key == pygame.K_ESCAPE:
+            self.parent.close(self.sm)
+            return
+
         if not self.focused:
             return
 
         if event.key == pygame.K_BACKSPACE:
             self.text = self.text[:-1]
-            return
-
-        if event.key == pygame.K_ESCAPE:
             return
 
         if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):

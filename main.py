@@ -41,8 +41,6 @@ def start():
     #define font
     font = pygame.font.SysFont(None, 36)
 
-
-
     #initialize game state
     sm = StateMachine()
 
@@ -68,7 +66,7 @@ def start():
                 running = False
 
         #handle input based on state
-        sm.handle_events(events)
+        sm.handle_events(events, sm)
         sm.handle_ui_events(events, sm)
         sm.update()
 

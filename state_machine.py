@@ -36,9 +36,9 @@ class StateMachine:
     def draw(self, screen: pygame.Surface):
         self.states[self.current_state].draw(screen)
 
-    def handle_events(self, events):
+    def handle_events(self, events, sm):
         """Call the states handle_events function."""
-        self.states[self.current_state].handle_events(events)
+        self.states[self.current_state].handle_events(events, sm)
 
     def handle_ui_events(self, events, sm):
         """Call the states handle_ui_events function."""
@@ -57,7 +57,7 @@ class BaseState:
     def exit(self): pass
     def update(self): pass
     def draw(self, screen: pygame.Surface): pass
-    def handle_events(self, events): pass
+    def handle_events(self, events, sm): pass
     def handle_ui_events(self, events, sm): pass
 
 class NonPopupState(BaseState):
@@ -89,7 +89,7 @@ class NonPopupState(BaseState):
 
 class BuildMode(NonPopupState):
     """Class for the build mode state"""
-    def handle_events(self, events):
+    def handle_events(self, events, sm):
         """Handle input."""
         for event in events:
             #check if left pressed
@@ -141,7 +141,7 @@ class BuildMode(NonPopupState):
 
 class SelectMode(NonPopupState):
     """Class for select mode state."""
-    def handle_events(self, events):
+    def handle_events(self, events, sm):
         """Handle input."""
         for event in events:
             #check if left key clicked
@@ -189,9 +189,9 @@ class PopupMode(BaseState):
                     if self.popup:
                         self.popup.is_clicked(x, y, sm)
 
-    def handle_events(self, events):
+    def handle_events(self, events, sm):
         """Handle input for the Text Input"""
-        self.popup.capture_input(events)
+        self.popup.capture_input(events, sm)
 
 class NewLineState(BaseState):
     """State when placing a new line."""
@@ -204,7 +204,7 @@ class NewLineState(BaseState):
         """Set the color variable."""
         self.color = color
 
-    def handle_events(self, events):
+    def handle_events(self, events, sm):
         """Handle input"""
         for event in events:
             #get mouse pos
