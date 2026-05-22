@@ -8,8 +8,6 @@ A more fitting name would be "Tram Builder"
 
 ## Overview
 
----
-
 - [Lines](#lines)
 
 - [Stations](#stations)
@@ -28,8 +26,6 @@ A more fitting name would be "Tram Builder"
 
 ## Lines
 
----
-
 - Add a new line by clicking the button labeled "+" in the top right
 - Remove a line by right clicking its icon in the top right
 - In Build Mode, select a line in the top right and click anywhere to build, however there are some restrictions:
@@ -38,11 +34,10 @@ A more fitting name would be "Tram Builder"
 - - There may be no triple intersections
 - - Loops are allowed
 - - Lines can only be build on street or park tiles
+- You can also switch between lines using the **Arrow Keys**
 
 
 ## Stations
-
----
 
 - Add a new station by right clicking while in build mode
 - Stations can not be removed
@@ -53,25 +48,20 @@ A more fitting name would be "Tram Builder"
 
 ## Modes
 
----
-
 - There are two modes:
 - - Build Mode
 - - Select Mode
 - In Build Mode, you can build lines and stations
 - In Select Mode, you can select a station to view its name at the top
+- The Mode can be switched by pressing the button in the top right, which shows the current mode, or by pressing **B**
 
 ## Camera
 
----
-
 - You can look around by holding the middle mouse button down and moving the mouse
 - You can zoom by using the scroll wheel
-- You can reset zoom and position by pressing Backspace
+- You can reset zoom and position by pressing **Backspace**
 
 ## Tile Types
-
----
 
 - There are 5 types of tiles:
 
@@ -120,8 +110,6 @@ A more fitting name would be "Tram Builder"
 
 ## Money
 
----
-
 - Money is earnt every second per station per line
 - The money is determined by 
 - - The amount of stations on the line
@@ -135,8 +123,6 @@ A more fitting name would be "Tram Builder"
 - - Start Money: 1000
 
 ## World Generation
-
----
 
 - The world gets generated in 6 steps:
 1. Generate streets from the middle outwards
