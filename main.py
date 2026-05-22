@@ -5,12 +5,14 @@ import math
 from camera import Camera
 from constants import *
 import global_vars
+from generator import generate_map
 from input import handle_mouse_move, handle_scroll_wheel
 from line import Line, LineState
-from map import metro_map
+from map import metro_map, bg_map
 from popup import ColorPopup, StationPopup
 from state_machine import StateMachine, BuildMode, SelectMode, PopupMode, NewLineState
 from station import Station
+from sprites import images
 
 build_mode = False
 
@@ -20,6 +22,8 @@ def start():
     pygame.init()
 
     global_vars.init()
+
+    generate_map()
 
     screen = pygame.display.set_mode((SCREEN_X, SCREEN_Y))
     pygame.display.set_caption("Metro Simulator")
@@ -92,6 +96,8 @@ def draw_screen(screen: pygame.Surface, camera: Camera):
 
             x = (col_index * TILE_SIZE - camera.x) * camera.zoom
             y = (row_index * TILE_SIZE - camera.y) * camera.zoom
+
+            draw_map(col_index, row_index, x, y, screen)
 
             #draw hover if map value is two
             if tile == 2:
@@ -214,6 +220,17 @@ def draw_ui(screen, font, game_state):
     station_text = font.render(global_vars.selected_station, True, (0, 0, 0))
     station_text_rect = station_text.get_rect(midleft=(len(Line.lines) * line_width + line_offset + len(Line.lines) * line_distance + 50, UI_HEIGHT // 2))
     screen.blit(station_text, station_text_rect)
+
+def draw_map(col, row, x, y, screen):
+    if bg_map[row][col] is not None:
+        original_image = images[bg_map[row][col]]
+
+        scaled = pygame.transform.scale(
+            original_image,
+            (int(math.ceil(TILE_SIZE * global_vars.camera.zoom)), int(math.ceil(TILE_SIZE * global_vars.camera.zoom)))
+        )
+
+        screen.blit(scaled, (x, y + UI_HEIGHT))
 
 if __name__ == "__main__":
     start()

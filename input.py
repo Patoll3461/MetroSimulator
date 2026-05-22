@@ -53,8 +53,9 @@ def handle_left_click(event):
     """Handle left click in select mode."""
     if event.type == pygame.MOUSEBUTTONDOWN:
         if event.button == 1:
-            x = math.floor((event.pos[0] + global_vars.camera.x) / TILE_SIZE)
-            y = math.floor((event.pos[1] + global_vars.camera.y - UI_HEIGHT) / TILE_SIZE)
+            x = math.floor((global_vars.camera.x + event.pos[0] / global_vars.camera.zoom) / TILE_SIZE)
+            y = math.floor((global_vars.camera.y + (event.pos[1] - UI_HEIGHT) / global_vars.camera.zoom) / TILE_SIZE)
+
             if y < 0:
                 return
             y = int(y)

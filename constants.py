@@ -40,3 +40,10 @@ line_offset = 10
 line_distance = 8
 line_width = 32
 line_height = 32
+
+big_park_max_size = 25
+middle_park_max_size = 15
+small_park_max_size = 8
+
+max_settlement_size = 20
+max_industry_size = 5

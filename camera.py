@@ -1,4 +1,4 @@
-from constants import SCREEN_X, WORLD_X, SCREEN_Y, WORLD_Y
+from constants import SCREEN_X, WORLD_X, SCREEN_Y, WORLD_Y, UI_HEIGHT
 
 import pygame
 
@@ -13,7 +13,7 @@ class Camera:
         mx, my = pygame.mouse.get_pos()
 
         world_x = self.x + mx / self.zoom
-        world_y = self.y + my / self.zoom
+        world_y = self.y + (my - UI_HEIGHT) / self.zoom
 
         self.zoom += zoom_factor
         if self.zoom >= self.max_zoom:
@@ -22,7 +22,7 @@ class Camera:
             self.zoom = self.min_zoom
 
         self.x = world_x - mx / self.zoom
-        self.y = world_y - my / self.zoom
+        self.y = world_y - (my - UI_HEIGHT) / self.zoom
 
         if self.x >= WORLD_X - (SCREEN_X / self.zoom):
             self.x = WORLD_X - (SCREEN_X / self.zoom)
@@ -32,6 +32,8 @@ class Camera:
             self.y = WORLD_Y - (SCREEN_Y / self.zoom)
         if self.y <= 0:
             self.y = 0
+
+        #scale(self.zoom)
 
     def move(self, vector: tuple[int, int]):
         self.x += vector[0]
