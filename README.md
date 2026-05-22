@@ -1,8 +1,6 @@
-# MetroSimulator
+# TramBuilder
 
 **Simple Python Tram Builder Game**
-
-A more fitting name would be "Tram Builder"
 
 
 
