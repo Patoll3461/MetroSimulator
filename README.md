@@ -36,6 +36,7 @@ A more fitting name would be "Tram Builder"
 - - There may be no triple intersections
 - - Loops are allowed
 - - Lines can only be build on street or park tiles
+- - Lines must follow the streets (except when entering or exiting a park)
 - You can also switch between lines using the **Arrow Keys**
 
 
