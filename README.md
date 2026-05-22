@@ -24,6 +24,8 @@ A more fitting name would be "Tram Builder"
 
 - [World Generation](#world-generation)
 
+- [Resource Sources](#resource-sources)
+
 ## Lines
 
 - Add a new line by clicking the button labeled "+" in the top right
@@ -147,4 +149,18 @@ python3 main.py --seed <seed>
 | 6181335  |
 | 8690652  |
 | 7892260  |
+
+## Resource Sources
+
+| Resource                      | Source                                                                          |
+|-------------------------------|---------------------------------------------------------------------------------|
+| Park Tiles                    | https://pigeonhat.itch.io/park-tileset#google_vignette                          |
+| Street Tiles                  | https://opengameart.org/content/road-tile-textures                              |
+| Settlement and Industry Tiles | https://gamesprites.fandom.com/wiki/Pokemon_homes                               |
+| Skyscraper Tiles              | https://oldninjacat.itch.io/skyscraper-buildings-asset?download#google_vignette |
+
+Some Tiles have been modified or put together to create new ones.
+
+
+
 
