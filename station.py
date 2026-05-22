@@ -15,6 +15,7 @@ class Station:
     def __init__(self, x, y, name):
         """Initialize station."""
         #check if station or line present
+
         if Station.station_map[y][x]:
             global_vars.warn_popup.open("Station already existent here!")
             return

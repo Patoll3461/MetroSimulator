@@ -1,3 +1,5 @@
+from math import sqrt
+
 from station import get_total_revenue
 from warn_popup import WarnPopup
 from constants import SCREEN_X, LINE_BASE_PRICE, STATION_BASE_PRICE, START_MONEY
@@ -48,7 +50,7 @@ def check_money(base_price, minimum):
     #calculate prise based of base price, current money per second and minimum
     price = max(
         minimum,
-        round(base_price * (1 + 0.05 * math.log2(1 + mps) + 0.0005 * mps))
+        round(base_price * (mps / 30) ** 1.1)
     )
 
     #return the price

@@ -1,4 +1,5 @@
 import math
+from time import sleep
 
 import pygame
 
@@ -127,11 +128,13 @@ class BuildMode(NonPopupState):
                 if my < UI_HEIGHT:
                     return
 
-                x = math.floor((mx // global_vars.camera.zoom + global_vars.camera.x) / TILE_SIZE)
-                y = math.floor(((my - UI_HEIGHT) // global_vars.camera.zoom + global_vars.camera.y) / TILE_SIZE)
+                world_x = mx / global_vars.camera.zoom + global_vars.camera.x
+                world_y = (my - UI_HEIGHT) / global_vars.camera.zoom + global_vars.camera.y
+
+                x = int(world_x // TILE_SIZE)
+                y = int(world_y // TILE_SIZE)
                 if y < 0:
                     return
-                y = int(y)
 
                 self.sm.change("StationPopupMode", x=x, y=y)
 
@@ -161,9 +164,10 @@ class PopupMode(BaseState):
 
     def enter(self, **kwargs):
         """Parse the x and y position in case of station placement."""
-        if kwargs.get("x"):
+        if "x" in kwargs:
             self.x = kwargs["x"]
-        if kwargs.get("y"):
+
+        if "y" in kwargs:
             self.y = kwargs["y"]
 
         if type(self.popup) == StationPopup:
