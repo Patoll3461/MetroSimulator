@@ -37,6 +37,7 @@ A more fitting name would be "Tram Builder"
 - - Loops are allowed
 - - Lines can only be build on street or park tiles
 - - Lines must follow the streets (except when entering or exiting a park)
+- - There can be maximum 5 lines on one tile and maximum 10 in total
 - You can also switch between lines using the **Arrow Keys**
 
 

@@ -46,5 +46,5 @@ class WarnPopup:
         self.timer += 1
 
         #after two seconds close popup
-        if self.timer  >= 120:
+        if self.timer  >= 90:
             self.close()
