@@ -85,6 +85,7 @@ def generate_map():
     #adjust the orientation of all street tiles to fit
     adjust_orientation()
 
+    #convert the map of numbers to tile objects
     convert_to_tile_object()
 
 
@@ -332,10 +333,13 @@ def get_coordinates():
     return x,y
 
 def convert_to_tile_object():
+    """Convert the map of numbers to tile objects."""
     for row_index, row in enumerate(bg_map):
         for col_index, tile in enumerate(row):
             for index, tile_type in enumerate(tile_types):
                 if tile in tile_type:
+                    #set population
                     population = random.randint(population_factors[index], 3 * population_factors[index])
+                    #create tile object
                     bg_map[row_index][col_index] = Tile(tile, population, quality_factors[index])
 

@@ -23,10 +23,12 @@ class Station:
             global_vars.warn_popup.open("Station needs a line to be placed!")
             return
 
+        #check if money is present
         payed, price = global_vars.check_money(STATION_BASE_PRICE, global_vars.station_min_price)
         if not payed:
             global_vars.warn_popup.open(f"Insufficient money! Need {price}!")
             return
+        #set min price to last price so price cant drop
         global_vars.station_min_price = price
 
         Station.station_map[y][x] = self
@@ -37,11 +39,10 @@ class Station:
         self.population = self.get_population_in_radius()
         self.quality_factor = self.get_quality_factor()
 
-        #check if money is present
-
         Station.stations.append(self)
 
     def get_population_in_radius(self):
+        """Gets population in the Station Radius."""
         tile_radius = []
         for x in range(-STATION_RADIUS, STATION_RADIUS + 1):
             for y in range(-STATION_RADIUS, STATION_RADIUS + 1):
@@ -53,6 +54,7 @@ class Station:
         return sum(tile_populations)
 
     def get_quality_factor(self):
+        """Gets the quality factor in the Station Radius."""
         tile_radius = []
         for x in range(-STATION_RADIUS, STATION_RADIUS + 1):
             for y in range(-STATION_RADIUS, STATION_RADIUS + 1):
@@ -65,6 +67,7 @@ class Station:
 
 
     def get_lines(self):
+        """Gets lines on a Station."""
         lines = []
         for line_state in Line.line_map[self.y][self.x]:
             lines.append(line_state.line)
@@ -72,14 +75,17 @@ class Station:
         return lines
 
     def get_revenue(self):
+        """Get the revenue for a Station."""
         revenue = 0
 
         for line in self.get_lines():
+            # revenue is a product of population, quality factor, and the srrt of lines on the station (to not reward lon lines overly) and 0.0003
             revenue += self.population * 0.0003 * self.quality_factor * math.sqrt(len(get_stations_on_line(line)))
 
         return revenue
 
 def get_stations_on_line(given_line):
+    """Get Stations on a Line."""
     stations = []
 
     for station in Station.stations:
@@ -90,6 +96,7 @@ def get_stations_on_line(given_line):
     return stations
 
 def get_total_revenue():
+    """Get the total revenue."""
     revenue = 0
 
     for station in Station.stations:

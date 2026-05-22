@@ -117,12 +117,14 @@ A more fitting name would be "Tram Builder"
 - - The amount of stations on the line
 - - The Population around each station
 - - The Quality Factor around each station
+- - The Radius of each station is 3 tiles in each direction
 - As a result having stations around highly populated or high quality areas increases revenue
 - Having lines with many stations or stations with many lines increases revenue
-- The prices also increase with the money you earn. Base Prices are:
+- The prices also increase with the money you earn. Base prices are:
 - - Line: 30
 - - Station: 60
 - - Start Money: 1000
+- Deleting a line will give you back the money as if it would have been bought for the base price of 30
 
 ## World Generation
 

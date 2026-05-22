@@ -99,6 +99,7 @@ class Line:
         if not payed:
             global_vars.warn_popup.open(f"Insufficient money! Need {price}!")
             return
+        # set minimum price to last price so prices cant drop
         global_vars.line_min_price = price
 
         #add the tile to map and check if orientation of adjacent tiles needs to change
@@ -405,6 +406,9 @@ def delete_line(index):
     #get line color
     color = Line.lines[index].color
 
+    #give back money
+    global_vars.money += len(Line.lines[index].tiles) * LINE_BASE_PRICE
+
     #delete line from list
     Line.lines.pop(index)
     #loop over map
@@ -414,6 +418,8 @@ def delete_line(index):
                 #delete all line states with the line that needs to be deleted
                 if line_state.line.color == color:
                     Line.line_map[row_index][col_index].pop(index)
+
+
 
 
 class LineState:

@@ -80,6 +80,7 @@ def start():
         global_vars.warn_popup.draw(screen)
         pygame.display.flip()
 
+        #if one second has passed get revenue
         if frame >= 60:
             revenue = round(get_total_revenue())
             global_vars.money += revenue
