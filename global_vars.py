@@ -15,11 +15,12 @@ money = 0
 mps = 0
 line_min_price = 0
 station_min_price = 0
+frame = 0
 
 #variables that need global access
 def init():
     """Initialize global vars"""
-    global font, selected_station, warn_popup, camera, money, mps, line_min_price, station_min_price
+    global font, selected_station, warn_popup, camera, money, mps, line_min_price, station_min_price, frame
 
     #main camera
     camera = Camera((0, 0), 0.5, 3)
@@ -37,13 +38,18 @@ def init():
     line_min_price = LINE_BASE_PRICE
     #station price min
     station_price_min = STATION_BASE_PRICE
+    #current frame
+    frame = 0
 
 def check_money(base_price, minimum):
     """Check if money is present"""
     global money
 
     #calculate prise based of base price, current money per second and minimum
-    price = max(minimum, round(base_price * (1 + 0.1 * math.log2(1 + mps))))
+    price = max(
+        minimum,
+        round(base_price * (1 + 0.08 * math.log2(1 + mps)) * (1 + mps ** 0.08))
+    )
 
     #return the price
     if money < price:

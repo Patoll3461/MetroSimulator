@@ -14,7 +14,7 @@ class Popup:
         self.font = font
     def draw(self, screen: pygame.Surface): pass
     def capture_input(self, events): pass
-    def is_clicked(self, x, y, sm, **kwargs): pass
+    def is_clicked(self, x, y, sm): pass
     def close(self, sm): pass
 
 
@@ -98,7 +98,7 @@ class ColorPopup(Popup):
 
         screen.blit(close_text, close_rect)
 
-    def is_clicked(self, x, y, sm, **kwargs):
+    def is_clicked(self, x, y, sm):
         """Check if a popup button was clicked."""
         #calculate the color picker grid for collision detection
         popup_x = (SCREEN_X - POPUP_X) // 2
@@ -171,14 +171,19 @@ class ColorPopup(Popup):
 
 class StationPopup(Popup):
     """Class for the Station Name Input Popup."""
-    def __init__(self, color, font):
+    def __init__(self, color, font, sm):
         """Add the input field as attribute."""
         super().__init__(color, font)
 
         popup_x = (SCREEN_X - POPUP_X) // 2
         popup_y = (SCREEN_Y - POPUP_Y) // 2
 
-        self.name_input = InputField(pygame.Color(87, 157, 201), font, popup_x + (POPUP_X - 400) / 2, popup_y + 120)
+        self.sm = sm
+
+        self.station_x = 0
+        self.station_y = 0
+
+        self.name_input = InputField(pygame.Color(87, 157, 201), font, popup_x + (POPUP_X - 400) / 2, popup_y + 120, self, self.sm)
 
 
     def draw(self, screen: pygame.Surface):
@@ -221,7 +226,7 @@ class StationPopup(Popup):
 
         screen.blit(close_text, close_rect)
 
-    def is_clicked(self, x, y, sm, **kwargs):
+    def is_clicked(self, x, y, sm):
         #check if input box is clicked
         self.name_input.is_clicked(x, y)
 
@@ -234,34 +239,7 @@ class StationPopup(Popup):
 
         #check if submit button pressed
         if bg_rect.collidepoint(x, y):
-            name = self.name_input.text
-
-            #check if name entered and name not yet used
-            if len(name) <= 0:
-                global_vars.warn_popup.open("Please enter a name!")
-                return
-
-            if name in [s.name for s in Station.stations]:
-                global_vars.warn_popup.open("Station name already in use!")
-                return
-
-            if kwargs.get("station_x") is None and kwargs.get("station_y") is None:
-                global_vars.warn_popup.open("Error! Please try again!")
-                return
-
-            #get old amount of stations
-            old_length = len(Station.stations)
-            #add station
-            Station(kwargs["station_x"], kwargs["station_y"], name)
-
-            #check if station creation was successfully
-            if old_length < len(Station.stations):
-                #reset input and close popup
-                self.name_input.text = ""
-                self.name_input.focused = False
-                self.name_input.color = pygame.Color(87, 157, 201)
-                sm.change("BuildMode")
-
+            self.submit(sm)
 
         #get close button rect
         close_text = self.font.render("X", True, (0, 0, 0))
@@ -285,10 +263,39 @@ class StationPopup(Popup):
         self.name_input.focused = False
         sm.change("BuildMode")
 
+    def set_position(self, x, y):
+        self.station_x = x
+        self.station_y = y
+
+    def submit(self, sm):
+        name = self.name_input.text
+
+        # check if name entered and name not yet used
+        if len(name) <= 0:
+            global_vars.warn_popup.open("Please enter a name!")
+            return
+
+        if name in [s.name for s in Station.stations]:
+            global_vars.warn_popup.open("Station name already in use!")
+            return
+
+        # get old amount of stations
+        old_length = len(Station.stations)
+        # add station
+        Station(self.station_x, self.station_y, name)
+
+        # check if station creation was successfully
+        if old_length < len(Station.stations):
+            # reset input and close popup
+            self.name_input.text = ""
+            self.name_input.focused = False
+            self.name_input.color = pygame.Color(87, 157, 201)
+            sm.change("BuildMode")
+
 
 class InputField:
     """Class for the input field."""
-    def __init__(self, color, font, x, y):
+    def __init__(self, color, font, x, y, parent, sm):
         """Initialize the Input field."""
         self.focused = False
         self.text = ""
@@ -297,6 +304,8 @@ class InputField:
         self.x = x
         self.y = y
         self.rect: pygame.Rect = pygame.Rect(self.x, self.y, 400, 50)
+        self.parent = parent
+        self.sm = sm
 
     def draw(self, screen):
         """Draw the input field"""
@@ -344,8 +353,11 @@ class InputField:
             self.text = self.text[:-1]
             return
 
-        if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_ESCAPE):
+        if event.key == pygame.K_ESCAPE:
             return
+
+        if event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
+            self.parent.submit(self.sm)
 
         if not event.unicode:
             return

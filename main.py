@@ -41,12 +41,15 @@ def start():
     #define font
     font = pygame.font.SysFont(None, 36)
 
-    #define popups
-    color_popup = ColorPopup(pygame.Color(184, 184, 184), font)
-    station_popup = StationPopup(pygame.Color(184, 184, 184), font)
+
 
     #initialize game state
     sm = StateMachine()
+
+    #define popups
+    color_popup = ColorPopup(pygame.Color(184, 184, 184), font)
+    station_popup = StationPopup(pygame.Color(184, 184, 184), font, sm)
+
     sm.add("BuildMode", BuildMode(sm))
     sm.add("SelectMode", SelectMode(sm))
     sm.add("ColorPopupMode", PopupMode(sm, color_popup))
@@ -55,7 +58,7 @@ def start():
     sm.change("SelectMode")
 
     while running:
-        frame += 1
+        global_vars.frame += 1
         #get events
         events = pygame.event.get()
 
@@ -79,13 +82,6 @@ def start():
         sm.draw(screen)
         global_vars.warn_popup.draw(screen)
         pygame.display.flip()
-
-        #if one second has passed get revenue
-        if frame >= 60:
-            revenue = round(get_total_revenue())
-            global_vars.money += revenue
-            global_vars.mps = revenue
-            frame = 0
 
         clock.tick(60)
 

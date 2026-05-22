@@ -6,9 +6,10 @@ from constants import UI_HEIGHT, TILE_SIZE
 from input import handle_left_mouse_event, handle_right_mouse_event, handle_line_key_down, handle_left_click, \
     handle_build_key_down, handle_ui_click
 from line import Line
-from popup import Popup
+from popup import Popup, StationPopup
 from map import metro_map
 import global_vars
+from station import get_total_revenue
 
 class StateMachine:
     """Class fpr state machine."""
@@ -78,6 +79,13 @@ class NonPopupState(BaseState):
             return
 
         metro_map[y][x] = 2
+
+        #if one second has passed get revenue
+        if global_vars.frame >= 60:
+            revenue = round(get_total_revenue())
+            global_vars.money += revenue
+            global_vars.mps = revenue
+            global_vars.frame = 0
 
 class BuildMode(NonPopupState):
     """Class for the build mode state"""
@@ -156,6 +164,12 @@ class PopupMode(BaseState):
         if kwargs.get("y"):
             self.y = kwargs["y"]
 
+        if type(self.popup) == StationPopup:
+            self.popup.set_position(self.x, self.y)
+
+    def exit(self):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+
     def draw(self, screen: pygame.Surface):
         """Draw the popup."""
         if self.popup:
@@ -169,7 +183,7 @@ class PopupMode(BaseState):
                 if event.button == 1:
                     x,y = event.pos
                     if self.popup:
-                        self.popup.is_clicked(x, y, sm, station_x=self.x, station_y=self.y)
+                        self.popup.is_clicked(x, y, sm)
 
     def handle_events(self, events):
         """Handle input for the Text Input"""
