@@ -33,8 +33,8 @@
 - In Build Mode, select a line in the top left and click anywhere to build, however there are some restrictions:
 - - The line needs a connecting part
 - - The player must have sufficient money
-- - There may be no triple intersections
-- - Loops are allowed
+- - There may be no triple intersections (**However lines of the same color may go next to each other**)
+- - Loops are allowed (**creating a loop will disable you from continuing to build the line!!!**)
 - - Lines can only be build on street or park tiles
 - - Lines must follow the streets (except when entering or exiting a park)
 - - There can be maximum 5 lines on one tile and maximum 10 in total
