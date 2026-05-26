@@ -1,5 +1,4 @@
 import math
-from itertools import product
 
 from constants import STATION_RADIUS, STATION_BASE_PRICE
 from line import Line
@@ -10,7 +9,7 @@ from map import bg_map
 class Station:
     """Class for station objects."""
     stations = []
-    station_map: list[list["Station | None"]] = [[None for _ in range(31)] for _ in range(20)]
+    station_map = [[None for _ in range(31)] for _ in range(20)]
 
     def __init__(self, x, y, name):
         """Initialize station."""
@@ -82,7 +81,7 @@ class Station:
         revenue = 0
 
         for line in self.get_lines():
-            # revenue is a product of population, quality factor, and the srrt of lines on the station (to not reward lon lines overly) and 0.0003
+            #revenue is a product of population, quality factor, and the sqrt of lines on the station (to not reward lon lines overly) and 0.0003
             revenue += self.population * 0.0003 * self.quality_factor * math.sqrt(len(get_stations_on_line(line)))
 
         return revenue

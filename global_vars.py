@@ -1,13 +1,8 @@
-from math import sqrt
-
-from station import get_total_revenue
 from warn_popup import WarnPopup
 from constants import SCREEN_X, LINE_BASE_PRICE, STATION_BASE_PRICE, START_MONEY
 from camera import Camera
 
 import pygame
-import math
-import argparse
 
 font = None
 selected_station = ""

@@ -37,7 +37,6 @@ class ColorPopup(Popup):
 
         header = self.font.render("Select a color", True, (0, 0, 0))
 
-        popup_x = (SCREEN_X - POPUP_X) // 2
         popup_y = (SCREEN_Y - POPUP_Y) // 2
 
         #render heading
@@ -51,7 +50,6 @@ class ColorPopup(Popup):
         spacing = 10
 
         grid_width = cols * line_width + (cols - 1) * spacing
-        grid_height = rows * line_height + (rows - 1) * spacing
 
         popup_x = (SCREEN_X - POPUP_X) // 2
         popup_y = (SCREEN_Y - POPUP_Y) // 2
@@ -67,7 +65,7 @@ class ColorPopup(Popup):
                 rect = pygame.Rect(start_x + col_index * (line_width + spacing), start_y + row_index * (line_height + spacing), line_width, line_height)
                 color = COLORS[i]
 
-                #if color is already used show it as grey
+                #if color is already used show it as gray
                 if COLORS[i] in [l.color for l in Line.lines]:
                     color = pygame.Color(143, 143, 143)
 
@@ -103,8 +101,6 @@ class ColorPopup(Popup):
     def is_clicked(self, x, y, sm):
         """Check if a popup button was clicked."""
         #calculate the color picker grid for collision detection
-        popup_x = (SCREEN_X - POPUP_X) // 2
-        popup_y = (SCREEN_Y - POPUP_Y) // 2
 
         cols = 5
         rows = 2
@@ -112,7 +108,6 @@ class ColorPopup(Popup):
         spacing = 10
 
         grid_width = cols * line_width + (cols - 1) * spacing
-        grid_height = rows * line_height + (rows - 1) * spacing
 
         popup_x = (SCREEN_X - POPUP_X) // 2
         popup_y = (SCREEN_Y - POPUP_Y) // 2
@@ -210,7 +205,6 @@ class StationPopup(Popup):
 
         header = self.font.render("Enter a name for Station", True, (0, 0, 0))
 
-        popup_x = (SCREEN_X - POPUP_X) // 2
         popup_y = (SCREEN_Y - POPUP_Y) // 2
 
         # render heading

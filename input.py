@@ -1,9 +1,4 @@
-import math
-import pygame
-
 import global_vars
-import warn_popup
-from camera import Camera
 from constants import *
 from line import Line, delete_line
 from station import Station

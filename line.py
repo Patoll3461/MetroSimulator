@@ -1,5 +1,3 @@
-from math import sqrt
-
 import pygame
 
 import global_vars
@@ -22,7 +20,7 @@ class Line:
 
         self.color = color
         self.tiles = []
-        self.add_tile(start_x, start_y, True, True)
+        self.add_tile(start_x, start_y, True)
 
         #check if adding tile was successfully
         if len(self.tiles) <= 0:
@@ -40,11 +38,10 @@ class Line:
         else:
             return "Misc Line"
 
-    def add_tile(self, x, y, is_first: bool = False, debug: bool = False):
+    def add_tile(self, x, y, is_first: bool = False):
         """Add the line to a new tile."""
         v_index = 1
         h_index = 1
-        orientation = 0
 
         if self.check_if_tile_exists(x, y):
             global_vars.warn_popup.open("Line already exists here!")
@@ -67,9 +64,9 @@ class Line:
 
         #check if the connecting index is free on this tile
         free_h_indexes, free_v_indexes = get_free_indexes(x, y)
-        orientation, connecting = self.check_orientation(x, y, True)
+        orientation, connecting = self.check_orientation(x, y)
 
-        #if its the first tile auto set orientation
+        #if it is the first tile auto set orientation
         if is_first:
             orientation = 0
 
@@ -110,7 +107,7 @@ class Line:
 
         self.adjust_connecting_orientation(x, y, connecting)
 
-    def check_orientation(self, x, y, is_for_new_tile=False):
+    def check_orientation(self, x, y):
         """Checks what orientation a tile at given position should be.
          This function is a complete mess.
          It is probably the worst part of the entire game.

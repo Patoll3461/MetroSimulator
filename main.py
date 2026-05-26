@@ -1,6 +1,4 @@
 import sys
-import pygame
-import math
 
 import seed
 from camera import Camera
@@ -12,7 +10,7 @@ from line import Line, LineState
 from map import metro_map, bg_map
 from popup import ColorPopup, StationPopup
 from state_machine import StateMachine, BuildMode, SelectMode, PopupMode, NewLineState
-from station import Station, get_total_revenue
+from station import Station
 from sprites import images, init_sprites
 
 
@@ -22,8 +20,6 @@ def start():
     seed.init_seed()
 
     pygame.init()
-
-    frame = 0
 
     #initialize global variables and sprites
     global_vars.init()
@@ -98,8 +94,6 @@ def draw_screen(screen: pygame.Surface, camera: Camera):
     pygame.draw.rect(screen, pygame.Color(0, 0, 0), (0, UI_HEIGHT - 5, x_bounds * TILE_SIZE, 5))
 
     for row_index in range(int(viewport[1] // TILE_SIZE), y_bounds):
-        row = metro_map[row_index]
-
         for col_index in range(int(viewport[0] // TILE_SIZE), x_bounds):
             tile = metro_map[row_index][col_index]
 
@@ -117,17 +111,16 @@ def draw_screen(screen: pygame.Surface, camera: Camera):
             #render lines in case of line
             if len(Line.line_map[row_index][col_index]) > 0:
                 lines: list[LineState] = Line.line_map[row_index][col_index]
-                line_amount = count_lines(lines)
 
                 for index, line in enumerate(lines):
                     #horizontal line
                     if line.orientation == 0:
-                        draw_lines_horizontal(screen, lines[index].line.color, x, y + UI_HEIGHT, line_amount, lines[index].h_index)
+                        draw_lines_horizontal(screen, lines[index].line.color, x, y + UI_HEIGHT, lines[index].h_index)
                         #vertical line
                     elif line.orientation == 1:
-                        draw_line_vertical(screen, lines[index].line.color, x, y + UI_HEIGHT, line_amount, lines[index].v_index)
+                        draw_line_vertical(screen, lines[index].line.color, x, y + UI_HEIGHT, lines[index].v_index)
                     elif 2 <= line.orientation <= 5:
-                        draw_edge(screen, lines[index].line.color, x, y + UI_HEIGHT, line_amount, lines[index].h_index, lines[index].v_index, line.orientation - 2)
+                        draw_edge(screen, lines[index].line.color, x, y + UI_HEIGHT, lines[index].h_index, lines[index].v_index, line.orientation - 2)
 
             if Station.station_map[row_index][col_index]:
                 draw_circle(screen, pygame.Color(71, 186, 250), x, y + UI_HEIGHT, col_index, row_index)
@@ -148,35 +141,35 @@ def count_lines(lines: list[LineState]) -> tuple[int, int]:
 
     return h, v
 
-def draw_lines_horizontal(screen: pygame.Surface, color: pygame.Color, x: int, y: int, line_amount: tuple[int, int], index: int):
+def draw_lines_horizontal(screen: pygame.Surface, color: pygame.Color, x: int, y: int, index: int):
     """Draw a horizontal line all the way through."""
     pygame.draw.rect(screen, color,(x, y + 0.25 * TILE_SIZE * global_vars.camera.zoom + index * LINE_WIDTH * global_vars.camera.zoom, TILE_SIZE * global_vars.camera.zoom, LINE_WIDTH * global_vars.camera.zoom))
 
-def draw_line_vertical(screen: pygame.Surface, color: pygame.Color, x: int, y: int, line_amount: tuple[int, int], index: int):
+def draw_line_vertical(screen: pygame.Surface, color: pygame.Color, x: int, y: int, index: int):
     """Draw a vertical line all the way through."""
     pygame.draw.rect(screen, color, (x + 0.25 * TILE_SIZE * global_vars.camera.zoom + index * LINE_WIDTH * global_vars.camera.zoom, y, LINE_WIDTH * global_vars.camera.zoom, TILE_SIZE * global_vars.camera.zoom))
 
-def draw_edge(screen, color, x, y, line_amount, h_index, v_index, orientation):
+def draw_edge(screen, color, x, y, h_index, v_index, orientation):
     """Draw an edge consisting of two different parts, horizontal and vertical."""
     #Good luck debugging this only god knows how it works
     if orientation == 0:
-        draw_vertical_edge_part(screen, color, x, y, line_amount, v_index, 0, (0.25 * TILE_SIZE * global_vars.camera.zoom + h_index * LINE_WIDTH * global_vars.camera.zoom) + math.floor(LINE_WIDTH * global_vars.camera.zoom))
-        draw_horizontal_edge_part(screen, color, x, y, line_amount, h_index, 0, (0.25 * TILE_SIZE * global_vars.camera.zoom + v_index * LINE_WIDTH * global_vars.camera.zoom) + math.floor(LINE_WIDTH * global_vars.camera.zoom))
+        draw_vertical_edge_part(screen, color, x, y, v_index, 0, (0.25 * TILE_SIZE * global_vars.camera.zoom + h_index * LINE_WIDTH * global_vars.camera.zoom) + math.floor(LINE_WIDTH * global_vars.camera.zoom))
+        draw_horizontal_edge_part(screen, color, x, y, h_index, 0, (0.25 * TILE_SIZE * global_vars.camera.zoom + v_index * LINE_WIDTH * global_vars.camera.zoom) + math.floor(LINE_WIDTH * global_vars.camera.zoom))
     elif orientation == 1:
-        draw_vertical_edge_part(screen, color, x, y, line_amount, v_index, 0, (0.25 * TILE_SIZE * global_vars.camera.zoom + h_index * LINE_WIDTH * global_vars.camera.zoom) + math.floor(LINE_WIDTH * global_vars.camera.zoom))
-        draw_horizontal_edge_part(screen, color, x, y, line_amount, h_index, 0.25 * TILE_SIZE * global_vars.camera.zoom + v_index * LINE_WIDTH * global_vars.camera.zoom, math.ceil(TILE_SIZE * global_vars.camera.zoom - (0.25 * TILE_SIZE * global_vars.camera.zoom + v_index * LINE_WIDTH * global_vars.camera.zoom)))
+        draw_vertical_edge_part(screen, color, x, y, v_index, 0, (0.25 * TILE_SIZE * global_vars.camera.zoom + h_index * LINE_WIDTH * global_vars.camera.zoom) + math.floor(LINE_WIDTH * global_vars.camera.zoom))
+        draw_horizontal_edge_part(screen, color, x, y, h_index, 0.25 * TILE_SIZE * global_vars.camera.zoom + v_index * LINE_WIDTH * global_vars.camera.zoom, math.ceil(TILE_SIZE * global_vars.camera.zoom - (0.25 * TILE_SIZE * global_vars.camera.zoom + v_index * LINE_WIDTH * global_vars.camera.zoom)))
     elif orientation == 2:
-        draw_vertical_edge_part(screen, color, x, y, line_amount, v_index, 0.25 * TILE_SIZE * global_vars.camera.zoom + h_index * LINE_WIDTH * global_vars.camera.zoom, math.ceil(TILE_SIZE * global_vars.camera.zoom - (0.25 * TILE_SIZE * global_vars.camera.zoom + h_index * LINE_WIDTH * global_vars.camera.zoom)))
-        draw_horizontal_edge_part(screen, color, x, y, line_amount, h_index,  0.25 * TILE_SIZE * global_vars.camera.zoom + v_index * LINE_WIDTH * global_vars.camera.zoom, math.ceil(TILE_SIZE * global_vars.camera.zoom - (0.25 * TILE_SIZE * global_vars.camera.zoom + v_index * LINE_WIDTH * global_vars.camera.zoom)))
+        draw_vertical_edge_part(screen, color, x, y, v_index, 0.25 * TILE_SIZE * global_vars.camera.zoom + h_index * LINE_WIDTH * global_vars.camera.zoom, math.ceil(TILE_SIZE * global_vars.camera.zoom - (0.25 * TILE_SIZE * global_vars.camera.zoom + h_index * LINE_WIDTH * global_vars.camera.zoom)))
+        draw_horizontal_edge_part(screen, color, x, y, h_index,  0.25 * TILE_SIZE * global_vars.camera.zoom + v_index * LINE_WIDTH * global_vars.camera.zoom, math.ceil(TILE_SIZE * global_vars.camera.zoom - (0.25 * TILE_SIZE * global_vars.camera.zoom + v_index * LINE_WIDTH * global_vars.camera.zoom)))
     elif orientation == 3:
-        draw_vertical_edge_part(screen, color, x, y, line_amount, v_index, 0.25 * TILE_SIZE * global_vars.camera.zoom + h_index * LINE_WIDTH * global_vars.camera.zoom, math.ceil(TILE_SIZE * global_vars.camera.zoom - (0.25 * TILE_SIZE * global_vars.camera.zoom + h_index * LINE_WIDTH * global_vars.camera.zoom)))
-        draw_horizontal_edge_part(screen, color, x, y, line_amount, h_index, 0, (0.25 * TILE_SIZE * global_vars.camera.zoom + v_index * LINE_WIDTH * global_vars.camera.zoom) + math.floor(LINE_WIDTH * global_vars.camera.zoom))
+        draw_vertical_edge_part(screen, color, x, y, v_index, 0.25 * TILE_SIZE * global_vars.camera.zoom + h_index * LINE_WIDTH * global_vars.camera.zoom, math.ceil(TILE_SIZE * global_vars.camera.zoom - (0.25 * TILE_SIZE * global_vars.camera.zoom + h_index * LINE_WIDTH * global_vars.camera.zoom)))
+        draw_horizontal_edge_part(screen, color, x, y, h_index, 0, (0.25 * TILE_SIZE * global_vars.camera.zoom + v_index * LINE_WIDTH * global_vars.camera.zoom) + math.floor(LINE_WIDTH * global_vars.camera.zoom))
 
-def draw_horizontal_edge_part(screen, color, x, y, line_amount, index, offset, width):
+def draw_horizontal_edge_part(screen, color, x, y, index, offset, width):
     """Draw the horizontal part of the edge."""
     pygame.draw.rect(screen, color,(x + offset, y + 0.25 * TILE_SIZE* global_vars.camera.zoom + index * LINE_WIDTH * global_vars.camera.zoom, width, LINE_WIDTH * global_vars.camera.zoom))
 
-def draw_vertical_edge_part(screen, color, x, y, line_amount, index, offset, height):
+def draw_vertical_edge_part(screen, color, x, y, index, offset, height):
     """Draw the vertical part of the edge."""
     pygame.draw.rect(screen, color, (x + 0.25 * TILE_SIZE * global_vars.camera.zoom + index * LINE_WIDTH * global_vars.camera.zoom, y + offset, LINE_WIDTH * global_vars.camera.zoom, height))
 
